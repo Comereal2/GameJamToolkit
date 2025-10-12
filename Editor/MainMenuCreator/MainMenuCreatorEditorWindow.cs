@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Editor.MainMenu.MainMenuLogic;
+using Runtime.Scripts.MainMenuLogic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -9,9 +9,10 @@ using Types;
 using UnityEditorInternal;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Editor.MainMenu.MainMenuCreator
+namespace Editor.MainMenuCreator
 {
     public class MainMenuCreatorEditorWindow : EditorWindow
     {
@@ -92,13 +93,14 @@ namespace Editor.MainMenu.MainMenuCreator
             }
             
             buttonList = new ReorderableList(buttons, typeof(Enums.MainMenuButtonTypes), true, true, true, true);
-
+            
             buttonList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
                 var button = buttons[index];
 
                 if (!separateButtonSettings)
                 {
+                    buttonList.elementHeight = EditorGUIUtility.singleLineHeight;
                     if (button != Enums.MainMenuButtonTypes.Play && button != Enums.MainMenuButtonTypes.NewGame)
                     {
                         buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
@@ -107,32 +109,29 @@ namespace Editor.MainMenu.MainMenuCreator
                     else
                     {
                         float halfWidth = rect.width / 2;
-                        buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
-                            new Rect(rect.x, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), button);
-                        playScene = (SceneAsset)EditorGUI.ObjectField(
-                            new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), 
-                            playScene, typeof(SceneAsset), true);
+                        buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), button);
+                        playScene = (SceneAsset)EditorGUI.ObjectField(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), playScene, typeof(SceneAsset), true);
                     }
 
                     return;
                 }
+
+                buttonList.elementHeight = propertiesHeight + EditorGUIUtility.singleLineHeight;
                 
                 if (button != Enums.MainMenuButtonTypes.Play && button != Enums.MainMenuButtonTypes.NewGame)
                 {
                     buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
-                        new Rect(rect.x, rect.y + index * propertiesHeight, rect.width, EditorGUIUtility.singleLineHeight), button);
+                        new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), button);
                 }
                 else
                 {
                     float halfWidth = rect.width / 2;
                     buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
                         new Rect(rect.x, rect.y + index * propertiesHeight, halfWidth, EditorGUIUtility.singleLineHeight), button);
-                    playScene = (SceneAsset)EditorGUI.ObjectField(
-                        new Rect(rect.x + halfWidth, rect.y + index * propertiesHeight, halfWidth, EditorGUIUtility.singleLineHeight), 
-                        playScene, typeof(SceneAsset), true);
+                    playScene = (SceneAsset)EditorGUI.ObjectField(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), playScene, typeof(SceneAsset), true);
                 }
                 
-                float yOffset = rect.y + EditorGUIUtility.singleLineHeight + 2 + index * propertiesHeight;
+                float yOffset = rect.y + EditorGUIUtility.singleLineHeight + 2;
 
                 ButtonProperties properties;
 
@@ -257,7 +256,6 @@ namespace Editor.MainMenu.MainMenuCreator
             }
             else
             {
-                EditorGUILayout.Space(propertiesHeight * buttonProperties.Count);
                 separateButtonSettings = EditorGUILayout.Toggle("Separate Button Settings", separateButtonSettings);
             }
             
@@ -406,15 +404,41 @@ namespace Editor.MainMenu.MainMenuCreator
                     }
                 }
                 
+                int playSceneBuildIndex = -1;
+                if (playScene)
+                {
+                    for (int j = 0; j < SceneManager.sceneCountInBuildSettings; j++)
+                    {
+                        if (SceneUtility.GetScenePathByBuildIndex(j).Contains(playScene.name))
+                        {
+                            playSceneBuildIndex = j;
+                            break;
+                        }
+                    }
+                }
                 
                 switch (buttons[i])
                 {
                     case Enums.MainMenuButtonTypes.Play:
-                        button.GetComponent<Button>().onClick.AddListener(() => MainMenuButtonOnClicks.Play(playScene));
+                        if (playSceneBuildIndex == -1)
+                        {
+                            Debug.LogError($"Scene of button {i} must be in Unity build order.");
+                        }
+                        else
+                        {
+                            button.GetComponent<Button>().onClick.AddListener(() => MainMenuButtonOnClicks.Play(playSceneBuildIndex));
+                        }
                         buttonText.text += "Play</size>";
                         break;
                     case Enums.MainMenuButtonTypes.NewGame:
-                        button.GetComponent<Button>().onClick.AddListener(() => MainMenuButtonOnClicks.Play(playScene));
+                        if (playSceneBuildIndex == -1)
+                        {
+                            Debug.LogError($"Scene of button {i} must be in Unity build order.");
+                        }
+                        else
+                        {
+                            button.GetComponent<Button>().onClick.AddListener(() => MainMenuButtonOnClicks.Play(playSceneBuildIndex));
+                        }
                         buttonText.text += "New Game</size>";
                         break;
                     case Enums.MainMenuButtonTypes.LoadGame:

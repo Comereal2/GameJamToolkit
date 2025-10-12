@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace Editor.MainMenu.MainMenuCreator
+namespace Editor.MainMenuCreator
 {
     public class SettingsMenuCreatorEditorWindow : EditorWindow
     {

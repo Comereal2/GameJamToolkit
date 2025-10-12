@@ -1,13 +1,13 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
-namespace Editor.MainMenu.MainMenuLogic
+namespace Runtime.Scripts.MainMenuLogic
 {
     public class MainMenuButtonOnClicks
     {
-        public static void Play(SceneAsset scene)
+        public static void Play(int sceneIndex)
         {
-            
+            SceneManager.LoadScene(sceneIndex);
         }
 
         public static void OpenSettings()

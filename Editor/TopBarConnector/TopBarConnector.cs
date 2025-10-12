@@ -1,5 +1,5 @@
 ﻿using UnityEditor;
-using Editor.MainMenu.MainMenuCreator;
+using Editor.MainMenuCreator;
 
 namespace Editor.TopBarConnector
 {
