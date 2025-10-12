@@ -93,7 +93,7 @@ namespace Editor.MainMenuCreator
 
             scrollingSpeed = EditorGUILayout.Slider("Scrolling Speed", scrollingSpeed, 0, 1);
             
-            base.OnGUI();
+            DisplayEndSettings();
 
             if (saveMenuPressed)
             {

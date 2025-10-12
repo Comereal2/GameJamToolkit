@@ -15,17 +15,19 @@ namespace Editor.MainMenuCreator
     {
         protected float spacing = 15f;
         
-        protected bool expandTitleSettings = false;
-        protected Color titleColor = Color.white;
-        protected bool titleHasOutline = true;
-        protected Color titleOutlineColor = Color.black;
-        [Range(0, 1)] protected float titleOutlineThickness = 0.1f;
-        protected int titleFontSize = 120;
+        private bool expandTitleSettings = false;
+        private Color titleColor = Color.white;
+        private bool titleHasOutline = true;
+        private Color titleOutlineColor = Color.black;
+        [Range(0, 1)] private float titleOutlineThickness = 0.1f;
+        private int titleFontSize = 120;
         
         private bool isBackgroundSolidColor = true;
         private Sprite backgroundImage;
         private Color backgroundColor = Color.black;
         private bool keepOnScene = false;
+
+        private Vector2 scrollPos;
         
         protected bool saveMenuPressed = false;
         
@@ -36,25 +38,6 @@ namespace Editor.MainMenuCreator
         protected Transform eventSystem;
         protected Transform menuCanvas;
         protected Transform title;
-        protected void OnGUI()
-        {
-            EditorGUILayout.Space(spacing);
-            
-            isBackgroundSolidColor = EditorGUILayout.Toggle("Is Background Solid Color", isBackgroundSolidColor);
-
-            if (isBackgroundSolidColor) backgroundColor = EditorGUILayout.ColorField(backgroundColor);
-            else backgroundImage = (Sprite)EditorGUILayout.ObjectField(backgroundImage, typeof(Sprite), false);
-            
-            EditorGUILayout.Space(spacing);
-            
-            keepOnScene = GUILayout.Toggle(keepOnScene, "Keep On Scene");
-
-            saveMenuPressed = false;
-            if (GUILayout.Button("Save Menu"))
-            {
-                saveMenuPressed = true;
-            }
-        }
 
         protected void CreateObjectBase(string menuTag, string titleText)
         {
@@ -114,6 +97,9 @@ namespace Editor.MainMenuCreator
 
         protected void DisplayTitleSettings(string expandName)
         {
+            EditorGUILayout.BeginHorizontal();
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+            
             expandTitleSettings = EditorGUILayout.Foldout(expandTitleSettings, expandName, true);
             if (expandTitleSettings)
             {
@@ -126,6 +112,28 @@ namespace Editor.MainMenuCreator
                     titleOutlineThickness = EditorGUILayout.Slider("Outline Thickness", titleOutlineThickness, 0, 1);
                 }
             }
+        }
+
+        protected void DisplayEndSettings()
+        {
+            EditorGUILayout.Space(spacing);
+            
+            isBackgroundSolidColor = EditorGUILayout.Toggle("Is Background Solid Color", isBackgroundSolidColor);
+
+            if (isBackgroundSolidColor) backgroundColor = EditorGUILayout.ColorField(backgroundColor);
+            else backgroundImage = (Sprite)EditorGUILayout.ObjectField(backgroundImage, typeof(Sprite), false);
+            
+            EditorGUILayout.Space(spacing);
+            
+            keepOnScene = GUILayout.Toggle(keepOnScene, "Keep On Scene");
+
+            saveMenuPressed = false;
+            if (GUILayout.Button("Save Menu"))
+            {
+                saveMenuPressed = true;
+            }
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndHorizontal();
         }
 
         protected RectTransform CreateBackButton()

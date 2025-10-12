@@ -221,7 +221,7 @@ namespace Editor.MainMenuCreator
                 separateButtonSettings = EditorGUILayout.Toggle("Separate Button Settings", separateButtonSettings);
             }
 
-            base.OnGUI();
+            DisplayEndSettings();
             if(saveMenuPressed) CreatePrefab();
         }
         protected void CreatePrefab()
