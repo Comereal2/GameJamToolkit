@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using MainMenuLogic;
 using TMPro;
+using Types;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -25,6 +27,8 @@ namespace Editor.MainMenuCreator
 
         private ReorderableList entryList;
         private List<CreditsEntry> entries = new();
+
+        [Range(0, 1)] private float scrollingSpeed = 0.5f;
 
         private void OnEnable()
         {
@@ -69,26 +73,16 @@ namespace Editor.MainMenuCreator
                     entry.names[i] = EditorGUI.TextField(new Rect(rect.x, rect.y + (yOffset) * (i + 2), rect.width, EditorGUIUtility.singleLineHeight), "Dev Name", entry.names[i]);
                 }
                 
-                float height = (entry.names.Count + 2) * (EditorGUIUtility.singleLineHeight + 5);
-                entryList.elementHeight = height;
-                
                 entries[index] = entry;
             };
+
+            entryList.elementHeightCallback = index => (entries[index].names.Count + 2) * (EditorGUIUtility.singleLineHeight + 5);
             
-            entryList.drawHeaderCallback = rect =>
-            {
-                EditorGUI.LabelField(rect, "Credits entries");
-            };
+            entryList.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Credits entries");
 
-            entryList.onAddCallback = list =>
-            {
-                entries.Add(new CreditsEntry("Category Name"));
-            };
+            entryList.onAddCallback = list => entries.Add(new CreditsEntry("Category Name"));
 
-            entryList.onRemoveCallback = list =>
-            {
-                entries.RemoveAt(list.index);
-            };
+            entryList.onRemoveCallback = list => entries.RemoveAt(list.index);
         }
 
         private void OnGUI()
@@ -96,6 +90,8 @@ namespace Editor.MainMenuCreator
             DisplayTitleSettings("Credits Title Settings");
             
             entryList.DoLayoutList();
+
+            scrollingSpeed = EditorGUILayout.Slider("Scrolling Speed", scrollingSpeed, 0, 1);
             
             base.OnGUI();
 
@@ -108,11 +104,18 @@ namespace Editor.MainMenuCreator
         private void CreatePrefab()
         {
             string menuName = "CreditsMenuPrefab";
-            CreateObjectBase(menuName, "Credits");
+            CreateObjectBase(Tags.creditsMenuTag, "Credits");
 
             title.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
 
-            float startingY = 360f;
+            Transform scrollContainer = new GameObject("ScrollingTextContainer", typeof(CreditsScrollBehavior)).transform;
+            CreditsScrollBehavior scrollBehavior = scrollContainer.GetComponent<CreditsScrollBehavior>();
+            scrollBehavior.scrollingSpeed = scrollingSpeed * 500;
+            title.SetParent(scrollContainer);
+            scrollContainer.SetParent(menuCanvas);
+            scrollContainer.localPosition = Vector3.zero;
+            title.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 450f);
+            float startingY = 340f;
             float entryTitleHeight = 60f;
             float entryTitleWidth = 600f;
             Vector2 entryTitleDimensions = new Vector2(entryTitleWidth, entryTitleHeight);
@@ -123,7 +126,7 @@ namespace Editor.MainMenuCreator
             {
                 CreditsEntry entry = entries[i];
                 RectTransform transform = new GameObject(entry.entry, typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
-                transform.SetParent(menuCanvas);
+                transform.SetParent(scrollContainer);
                 transform.anchoredPosition = new Vector2(0, startingY - offset);
                 transform.sizeDelta = entryTitleDimensions;
                 offset += entryTitleHeight + spacing;
@@ -143,6 +146,14 @@ namespace Editor.MainMenuCreator
                     nameText.alignment = TextAlignmentOptions.Center;
                 }
             }
+
+            RectTransform button = CreateBackButton();
+            button.SetParent(menuCanvas);
+            button.gameObject.SetActive(false);
+            button.anchoredPosition = new Vector2(0, -300f);
+            
+            scrollBehavior.scrollingEnd = offset - startingY;
+            scrollBehavior.backButton = button.gameObject;
             
             CreatePrefab(menuName);
         }

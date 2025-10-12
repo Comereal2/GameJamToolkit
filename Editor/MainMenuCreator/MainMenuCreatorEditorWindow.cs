@@ -181,20 +181,11 @@ namespace Editor.MainMenuCreator
                 }
             };
 
-            buttonList.drawHeaderCallback = (Rect rect) =>
-            {
-                EditorGUI.LabelField(rect, "Main Menu Buttons");
-            };
+            buttonList.drawHeaderCallback = (Rect rect) => EditorGUI.LabelField(rect, "Main Menu Buttons");
 
-            buttonList.onAddCallback = (ReorderableList list) =>
-            {
-                buttons.Add(Enums.MainMenuButtonTypes.None);
-            };
+            buttonList.onAddCallback = (ReorderableList list) => buttons.Add(Enums.MainMenuButtonTypes.None);
 
-            buttonList.onRemoveCallback = (ReorderableList list) =>
-            {
-                buttons.RemoveAt(list.index);
-            };
+            buttonList.onRemoveCallback = (ReorderableList list) => buttons.RemoveAt(list.index);
         }
 
         private void OnGUI()
@@ -236,13 +227,11 @@ namespace Editor.MainMenuCreator
         protected void CreatePrefab()
         {
             string menuName = "MainMenuPrefab";
-            CreateObjectBase(menuName, gameName);
+            CreateObjectBase(Tags.mainMenuTag, gameName);
             
             Transform buttonHolder = new GameObject("Buttons").transform;
             buttonHolder.SetParent(menuCanvas);
             buttonHolder.localPosition = Vector3.zero;
-
-            MainMenuButtonOnClicks buttonOnClicksObject = buttonHolder.gameObject.AddComponent<MainMenuButtonOnClicks>();
             
             float colSize = 740;
             float buttonToSpacingRatio = 0.3f;
@@ -331,7 +320,7 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            button.GetComponent<Button>().onClick.AddListener(() => buttonOnClicksObject.Play(playSceneBuildIndex));
+                            button.GetComponent<Button>().onClick.AddListener(() => MenuManager.instance.Play(playSceneBuildIndex));
                         }
                         buttonText.text += "Play</size>";
                         break;
@@ -342,24 +331,24 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            button.GetComponent<Button>().onClick.AddListener(() => buttonOnClicksObject.Play(playSceneBuildIndex));
+                            button.GetComponent<Button>().onClick.AddListener(() => MenuManager.instance.Play(playSceneBuildIndex));
                         }
                         buttonText.text += "New Game</size>";
                         break;
                     case Enums.MainMenuButtonTypes.LoadGame:
-                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.OpenLoadMenu);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.OpenLoadMenu);
                         buttonText.text += "Load Save</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Settings:
-                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.OpenSettings);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.OpenSettings);
                         buttonText.text += "Settings</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Credits:
-                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.OpenCredits);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.OpenCredits);
                         buttonText.text += "Credits</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Quit:
-                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.QuitGame);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.QuitGame);
                         buttonText.text += "Quit</size>";
                         break;
                     default:

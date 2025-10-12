@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using MainMenuLogic;
 using TMPro;
+using Types;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -54,11 +56,13 @@ namespace Editor.MainMenuCreator
             }
         }
 
-        protected void CreateObjectBase(string menuName, string titleText)
+        protected void CreateObjectBase(string menuTag, string titleText)
         {
-            GameObject leftoverMenu = GameObject.Find(menuName);
+            if (!MenuManager.instance) MenuManager.instance = new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
+            
+            GameObject leftoverMenu = GameObject.Find(menuTag);
             if(leftoverMenu) DestroyImmediate(leftoverMenu);
-            menuParent = new GameObject(menuName).transform;
+            menuParent = new GameObject(menuTag).transform;
             if (!FindAnyObjectByType<EventSystem>())
             {
                 eventSystem = new GameObject("EventSystem", typeof(EventSystem)).transform;
@@ -75,7 +79,7 @@ namespace Editor.MainMenuCreator
             
             eventSystem.SetParent(menuParent);
             menuCanvas.SetParent(menuParent);
-            CreateBackground(menuCanvas);
+            CreateBackground();
             title.SetParent(menuCanvas);
             
             menuCanvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -124,10 +128,25 @@ namespace Editor.MainMenuCreator
             }
         }
 
-        private void CreateBackground(Transform parent)
+        protected RectTransform CreateBackButton()
+        {
+            RectTransform button = new GameObject("Back Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button)).GetComponent<RectTransform>();
+            button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.BackButton);
+            TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
+            RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
+            buttonTextRect.sizeDelta = button.sizeDelta;
+            buttonTextRect.anchoredPosition = Vector2.zero;
+            buttonText.richText = true;
+            buttonText.alignment = TextAlignmentOptions.Center;
+            buttonText.text = $"<size=24>Back</size>";
+            buttonText.color = Color.black;
+            return button;
+        }
+
+        private void CreateBackground()
         {
             Transform background = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).transform;
-            background.SetParent(parent);
+            background.SetParent(menuCanvas);
             background.GetComponent<RectTransform>().sizeDelta = new Vector2(1920, 1080);
             if (isBackgroundSolidColor)
             {
