@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Runtime.Scripts.MainMenuLogic;
+using MainMenuLogic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -14,7 +14,7 @@ using UnityEngine.UI;
 
 namespace Editor.MainMenuCreator
 {
-    public class MainMenuCreatorEditorWindow : EditorWindow
+    public class MainMenuCreatorEditorWindow : MenuWindowTemplate
     {
         public struct ButtonProperties
         {
@@ -48,18 +48,8 @@ namespace Editor.MainMenuCreator
                 textOutlineThickness = p.textOutlineThickness;
             }
         }
-        
-        private float spacing = 15f;
-        
-        private bool keepObject = false;
-        
+
         private string gameName = "Game";
-        private bool expandGameNameSettings = false;
-        private Color gameNameColor = Color.white;
-        private bool gameNameHasOutline = true;
-        private Color gameNameOutlineColor = Color.black;
-        [Range(0, 1)] private float gameNameOutlineThickness = 0.1f;
-        private int gameNameFontSize = 120;
 
         private SceneAsset playScene;
         private ReorderableList buttonList;
@@ -74,13 +64,6 @@ namespace Editor.MainMenuCreator
         {
             new ButtonProperties(true, null, Color.white, Color.white, true, Color.black, 0.1f)
         };
-
-        private bool isBackgroundSolidColor = true;
-        private Sprite backgroundImage;
-        private Color backgroundColor = Color.black;
-
-        private int outlineColorId = Shader.PropertyToID("_OutlineColor");
-        private int outlineThicknessId = Shader.PropertyToID("_OutlineWidth");
 
         private void OnEnable()
         {
@@ -217,20 +200,8 @@ namespace Editor.MainMenuCreator
         private void OnGUI()
         {
             gameName = EditorGUILayout.TextField("Game Name", gameName);
-
-            expandGameNameSettings = EditorGUILayout.Foldout(expandGameNameSettings, "Additional Game Name Settings", true);
-
-            if (expandGameNameSettings)
-            {
-                gameNameFontSize = EditorGUILayout.IntField("Font Size", gameNameFontSize);
-                gameNameColor = EditorGUILayout.ColorField("Font Color", gameNameColor);
-                gameNameHasOutline = EditorGUILayout.Toggle("Has Outline", gameNameHasOutline);
-                if (gameNameHasOutline)
-                {
-                    gameNameOutlineColor = EditorGUILayout.ColorField("Outline Color", gameNameOutlineColor);
-                    gameNameOutlineThickness = EditorGUILayout.Slider("Outline Thickness", gameNameOutlineThickness, 0, 1);
-                }
-            }
+            
+            DisplayTitleSettings("Additional Game Name Settings");
             
             EditorGUILayout.Space(spacing);
             
@@ -243,7 +214,7 @@ namespace Editor.MainMenuCreator
                 {
                     combinedButtonProperties.isSolidColor = EditorGUILayout.Toggle("Is Button Solid Color", combinedButtonProperties.isSolidColor);
                     if (combinedButtonProperties.isSolidColor) combinedButtonProperties.buttonColor = EditorGUILayout.ColorField("Button Background Color", combinedButtonProperties.buttonColor);
-                    else combinedButtonProperties.buttonImage = (Sprite)EditorGUILayout.ObjectField(backgroundImage, typeof(Sprite), false);
+                    else combinedButtonProperties.buttonImage = (Sprite)EditorGUILayout.ObjectField(combinedButtonProperties.buttonImage, typeof(Sprite), false);
                     combinedButtonProperties.textColor = EditorGUILayout.ColorField("Button Text Color", combinedButtonProperties.textColor);
                     combinedButtonProperties.textHasOutline = EditorGUILayout.Toggle("Has Outline", combinedButtonProperties.textHasOutline);
                     if (combinedButtonProperties.textHasOutline)
@@ -258,87 +229,21 @@ namespace Editor.MainMenuCreator
             {
                 separateButtonSettings = EditorGUILayout.Toggle("Separate Button Settings", separateButtonSettings);
             }
-            
-            EditorGUILayout.Space(spacing);
-            
-            isBackgroundSolidColor = EditorGUILayout.Toggle("Is Background Solid Color", isBackgroundSolidColor);
 
-            if (isBackgroundSolidColor) backgroundColor = EditorGUILayout.ColorField(backgroundColor);
-            else backgroundImage = (Sprite)EditorGUILayout.ObjectField(backgroundImage, typeof(Sprite), false);
-            
-            EditorGUILayout.Space(spacing);
-            
-            keepObject = GUILayout.Toggle(keepObject, "Keep On Scene");
-            
-            if (GUILayout.Button("Save Main Menu"))
-            {
-                for (int i = 0; i < buttons.Count; i++)
-                {
-                    if (buttons[i] == Enums.MainMenuButtonTypes.None)
-                    {
-                        buttons.RemoveAt(i);
-                        i--;
-                    }
-                }
-                CreateMainMenuPrefab();
-            }
+            base.OnGUI();
+            if(saveMenuPressed) CreatePrefab();
         }
-
-        private void CreateMainMenuPrefab()
+        protected void CreatePrefab()
         {
-            if (!TryGetSelectedFolderPath(out string path)) return;
-            path += "/MainMenu.prefab";
-            GameObject leftoverMenu = GameObject.Find("MenuPrefab");
-            if(leftoverMenu) DestroyImmediate(leftoverMenu);
-            Transform menuPrefab = new GameObject("MenuPrefab").transform;
-            Transform eventSystem = new GameObject("EventSystem", typeof(EventSystem)).transform;
-            Transform menuCanvas = new GameObject("Menu Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster)).transform;
-            Transform title = new GameObject("Title", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).transform;
+            string menuName = "MainMenuPrefab";
+            CreateObjectBase(menuName, gameName);
+            
             Transform buttonHolder = new GameObject("Buttons").transform;
-            Transform background = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).transform;
-            
-            eventSystem.SetParent(menuPrefab);
-            menuCanvas.SetParent(menuPrefab);
-            background.SetParent(menuCanvas);
-            title.SetParent(menuCanvas);
             buttonHolder.SetParent(menuCanvas);
-            #if ENABLE_INPUT_SYSTEM
-            eventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
-            #endif
-            #if !ENABLE_INPUT_SYSTEM
-            eventSystem.gameObject.AddComponent<StandaloneInputModule>();
-            #endif
+            buttonHolder.localPosition = Vector3.zero;
 
-            TMP_Text titleText = title.GetComponent<TMP_Text>();
-            titleText.text = $"<b><size={gameNameFontSize}>{gameName}</size></b>";
-            titleText.richText = true;
-            titleText.color = gameNameColor;
-            if (gameNameHasOutline)
-            {
-                Material newTitleTextMat = new Material(titleText.fontMaterial);
-                newTitleTextMat.SetColor(outlineColorId, gameNameOutlineColor);
-                newTitleTextMat.SetFloat(outlineThicknessId, gameNameOutlineThickness);
-                titleText.fontMaterial = newTitleTextMat;
-            }
-            RectTransform titleRect = title.GetComponent<RectTransform>();
-            titleRect.sizeDelta = new Vector2(1800, 50);
-            titleRect.anchoredPosition = new Vector2(0, 475);
+            MainMenuButtonOnClicks buttonOnClicksObject = buttonHolder.gameObject.AddComponent<MainMenuButtonOnClicks>();
             
-            menuCanvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-            CanvasScaler scaler = menuCanvas.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
-
-            background.GetComponent<RectTransform>().sizeDelta = new Vector2(1920, 1080);
-            if (isBackgroundSolidColor)
-            {
-                background.GetComponent<Image>().color = backgroundColor;
-            }
-            else
-            {
-                background.GetComponent<Image>().sprite = backgroundImage;
-            }
-
             float colSize = 740;
             float buttonToSpacingRatio = 0.3f;
             //float buttonWidthToHeight = 2.57f;
@@ -426,7 +331,7 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            button.GetComponent<Button>().onClick.AddListener(() => MainMenuButtonOnClicks.Play(playSceneBuildIndex));
+                            button.GetComponent<Button>().onClick.AddListener(() => buttonOnClicksObject.Play(playSceneBuildIndex));
                         }
                         buttonText.text += "Play</size>";
                         break;
@@ -437,24 +342,24 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            button.GetComponent<Button>().onClick.AddListener(() => MainMenuButtonOnClicks.Play(playSceneBuildIndex));
+                            button.GetComponent<Button>().onClick.AddListener(() => buttonOnClicksObject.Play(playSceneBuildIndex));
                         }
                         buttonText.text += "New Game</size>";
                         break;
                     case Enums.MainMenuButtonTypes.LoadGame:
-                        button.GetComponent<Button>().onClick.AddListener(MainMenuButtonOnClicks.OpenLoadMenu);
+                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.OpenLoadMenu);
                         buttonText.text += "Load Save</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Settings:
-                        button.GetComponent<Button>().onClick.AddListener(MainMenuButtonOnClicks.OpenSettings);
+                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.OpenSettings);
                         buttonText.text += "Settings</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Credits:
-                        button.GetComponent<Button>().onClick.AddListener(MainMenuButtonOnClicks.OpenCredits);
+                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.OpenCredits);
                         buttonText.text += "Credits</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Quit:
-                        button.GetComponent<Button>().onClick.AddListener(MainMenuButtonOnClicks.QuitGame);
+                        button.GetComponent<Button>().onClick.AddListener(buttonOnClicksObject.QuitGame);
                         buttonText.text += "Quit</size>";
                         break;
                     default:
@@ -463,19 +368,7 @@ namespace Editor.MainMenuCreator
                 }
             }
 
-            PrefabUtility.SaveAsPrefabAsset(menuPrefab.gameObject, path);
-            if (!keepObject) DestroyImmediate(menuPrefab.gameObject);
-        }
-
-        private static bool TryGetSelectedFolderPath(out string path)
-        {
-            var tryGetActiveFolderPath = typeof(ProjectWindowUtil).GetMethod("TryGetActiveFolderPath", BindingFlags.Static | BindingFlags.NonPublic);
-
-            object[] args = new object[] { null };
-            bool found = (bool)tryGetActiveFolderPath.Invoke(null, args);
-            path = (string)args[0];
-
-            return found;
+            CreatePrefab(menuName);
         }
     }
 }

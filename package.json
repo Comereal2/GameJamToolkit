@@ -1,6 +1,6 @@
 {
   "name": "com.comereal.gamejamtoolkit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "Comereal`s Game Jam Toolkit",
   "description": "A bundle of tools which lets you quickly set up parts of your game, for which you usually dont have time during a game jam.",
   "author": {

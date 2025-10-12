@@ -1,31 +1,31 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Runtime.Scripts.MainMenuLogic
+namespace MainMenuLogic
 {
-    public class MainMenuButtonOnClicks
+    public class MainMenuButtonOnClicks : MonoBehaviour
     {
-        public static void Play(int sceneIndex)
+        public void Play(int sceneIndex)
         {
             SceneManager.LoadScene(sceneIndex);
         }
 
-        public static void OpenSettings()
+        public void OpenSettings()
         {
             
         }
 
-        public static void OpenCredits()
+        public void OpenCredits()
         {
             
         }
 
-        public static void QuitGame()
+        public void QuitGame()
         {
             Application.Quit();
         }
 
-        public static void OpenLoadMenu()
+        public void OpenLoadMenu()
         {
             
         }
