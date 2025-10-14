@@ -1,8 +1,6 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using MainMenuLogic;
 using TMPro;
-using Types;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,14 +11,39 @@ namespace Editor.MainMenuCreator
 {
     public class MenuWindowTemplate : EditorWindow
     {
-        protected float spacing = 15f;
+        public struct TextData
+        {
+            public bool ExpandSettings;
+            public Color TextColor;
+            public bool TextHasOutline;
+            public Color TextOutlineColor;
+            public float TextOutlineThickness;
+            public int TextFontSize;
+
+            public TextData(bool expandSettings = false, Color textColor = default, bool textHasOutline = true, Color textOutlineColor = default, float textOutlineThickness = 0.1f, int textFontSize = 120)
+            {
+                ExpandSettings = expandSettings;
+                TextColor = textColor;
+                TextHasOutline = textHasOutline;
+                TextOutlineColor = textOutlineColor;
+                TextOutlineThickness = textOutlineThickness;
+                TextFontSize = textFontSize;
+            }
+
+            public TextData(TextData d)
+            {
+                ExpandSettings = d.ExpandSettings;
+                TextColor = d.TextColor;
+                TextHasOutline = d.TextHasOutline;
+                TextOutlineColor = d.TextOutlineColor;
+                TextOutlineThickness = d.TextOutlineThickness;
+                TextFontSize = d.TextFontSize;
+            }
+        }
         
-        private bool expandTitleSettings = false;
-        private Color titleColor = Color.white;
-        private bool titleHasOutline = true;
-        private Color titleOutlineColor = Color.black;
-        [Range(0, 1)] private float titleOutlineThickness = 0.1f;
-        private int titleFontSize = 120;
+        protected float spacing = 15f;
+
+        protected TextData titleData = new(textColor: Color.white, textOutlineColor: Color.black);
         
         private bool isBackgroundSolidColor = true;
         private Sprite backgroundImage;
@@ -70,20 +93,11 @@ namespace Editor.MainMenuCreator
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
             
-            TMP_Text titleTextComp = title.GetComponent<TMP_Text>();
-            titleTextComp.text = $"<b><size={titleFontSize}>{titleText}</size></b>";
-            titleTextComp.richText = true;
-            titleTextComp.color = titleColor;
-            if (titleHasOutline)
-            {
-                Material newTitleTextMat = new Material(titleTextComp.fontMaterial);
-                newTitleTextMat.SetColor(outlineColorId, titleOutlineColor);
-                newTitleTextMat.SetFloat(outlineThicknessId, titleOutlineThickness);
-                titleTextComp.fontMaterial = newTitleTextMat;
-            }
-            RectTransform titleRect = title.GetComponent<RectTransform>();
-            titleRect.sizeDelta = new Vector2(1800, 50);
-            titleRect.anchoredPosition = new Vector2(0, 475);
+            SetTextProperties(titleText, titleData, title.GetComponent<TMP_Text>());
+            
+            RectTransform textRect = title.gameObject.GetComponent<RectTransform>();
+            textRect.sizeDelta = new Vector2(1800, 50);
+            textRect.anchoredPosition = new Vector2(0, 475);
         }
 
         protected void CreatePrefab(string menuName)
@@ -95,21 +109,25 @@ namespace Editor.MainMenuCreator
             if (!keepOnScene) DestroyImmediate(menuParent.gameObject);
         }
 
-        protected void DisplayTitleSettings(string expandName)
+        protected void DisplayStartSettings(string titleExpandName)
         {
             EditorGUILayout.BeginHorizontal();
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-            
-            expandTitleSettings = EditorGUILayout.Foldout(expandTitleSettings, expandName, true);
-            if (expandTitleSettings)
+            DisplayTextSettings(titleExpandName, ref titleData);
+        }
+
+        protected void DisplayTextSettings(string expandName, ref TextData data)
+        {
+            data.ExpandSettings = EditorGUILayout.Foldout(data.ExpandSettings, expandName, true);
+            if (data.ExpandSettings)
             {
-                titleFontSize = EditorGUILayout.IntField("Font Size", titleFontSize);
-                titleColor = EditorGUILayout.ColorField("Font Color", titleColor);
-                titleHasOutline = EditorGUILayout.Toggle("Has Outline", titleHasOutline);
-                if (titleHasOutline)
+                data.TextFontSize = EditorGUILayout.IntField("Font Size", data.TextFontSize);
+                data.TextColor = EditorGUILayout.ColorField("Font Color", data.TextColor);
+                data.TextHasOutline = EditorGUILayout.Toggle("Has Outline", data.TextHasOutline);
+                if (data.TextHasOutline)
                 {
-                    titleOutlineColor = EditorGUILayout.ColorField("Outline Color", titleOutlineColor);
-                    titleOutlineThickness = EditorGUILayout.Slider("Outline Thickness", titleOutlineThickness, 0, 1);
+                    data.TextOutlineColor = EditorGUILayout.ColorField("Outline Color", data.TextOutlineColor);
+                    data.TextOutlineThickness = EditorGUILayout.Slider("Outline Thickness", data.TextOutlineThickness, 0, 1);
                 }
             }
         }
@@ -134,6 +152,20 @@ namespace Editor.MainMenuCreator
             }
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndHorizontal();
+        }
+
+        protected void SetTextProperties(string text, TextData data, TMP_Text textComp)
+        {
+            textComp.text = $"<size={data.TextFontSize}>{text}</size>";
+            textComp.richText = true;
+            textComp.color = data.TextColor;
+            if (data.TextHasOutline)
+            {
+                Material newTitleTextMat = new Material(textComp.fontMaterial);
+                newTitleTextMat.SetColor(outlineColorId, data.TextOutlineColor);
+                newTitleTextMat.SetFloat(outlineThicknessId, data.TextOutlineThickness);
+                textComp.fontMaterial = newTitleTextMat;
+            }
         }
 
         protected RectTransform CreateBackButton()

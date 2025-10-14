@@ -192,7 +192,7 @@ namespace Editor.MainMenuCreator
         {
             gameName = EditorGUILayout.TextField("Game Name", gameName);
             
-            DisplayTitleSettings("Additional Game Name Settings");
+            DisplayStartSettings("Additional Game Name Settings");
             
             EditorGUILayout.Space(spacing);
             
@@ -224,7 +224,7 @@ namespace Editor.MainMenuCreator
             DisplayEndSettings();
             if(saveMenuPressed) CreatePrefab();
         }
-        protected void CreatePrefab()
+        private void CreatePrefab()
         {
             string menuName = "MainMenuPrefab";
             CreateObjectBase(Tags.mainMenuTag, gameName);
@@ -269,6 +269,7 @@ namespace Editor.MainMenuCreator
                     {
                         button.GetComponent<Image>().sprite = buttonProperties[i].buttonImage;
                     }
+                    
                     buttonText.color = buttonProperties[i].textColor;
                     if (buttonProperties[i].textHasOutline)
                     {

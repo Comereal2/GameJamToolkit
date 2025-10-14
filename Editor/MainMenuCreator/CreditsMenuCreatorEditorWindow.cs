@@ -5,9 +5,6 @@ using Types;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
-using UnityEngine.UI;
 
 namespace Editor.MainMenuCreator
 {
@@ -27,6 +24,9 @@ namespace Editor.MainMenuCreator
 
         private ReorderableList entryList;
         private List<CreditsEntry> entries = new();
+
+        private TextData creditsCategoryData = new(textColor: Color.white, textOutlineColor: Color.black, textFontSize: 60);
+        private TextData creditsNameData = new(textColor: Color.white, textOutlineColor: Color.black, textFontSize: 40);
 
         [Range(0, 1)] private float scrollingSpeed = 0.5f;
 
@@ -87,10 +87,13 @@ namespace Editor.MainMenuCreator
 
         private void OnGUI()
         {
-            DisplayTitleSettings("Credits Title Settings");
+            DisplayStartSettings("Credits Title Settings");
             
             entryList.DoLayoutList();
 
+            DisplayTextSettings("Credits Category Settings", ref creditsCategoryData);
+            DisplayTextSettings("Credits Name Settings", ref creditsNameData);
+            
             scrollingSpeed = EditorGUILayout.Slider("Scrolling Speed", scrollingSpeed, 0, 1);
             
             DisplayEndSettings();
@@ -131,8 +134,7 @@ namespace Editor.MainMenuCreator
                 transform.sizeDelta = entryTitleDimensions;
                 offset += entryTitleHeight + spacing;
                 TMP_Text text = transform.GetComponent<TMP_Text>();
-                text.text = $"<size=60>{entry.entry}</size>";
-                text.richText = true;
+                SetTextProperties(entry.entry, creditsCategoryData, text);
                 text.alignment = TextAlignmentOptions.Center;
                 for (int j = 0; j < entry.names.Count; j++)
                 {
@@ -142,7 +144,7 @@ namespace Editor.MainMenuCreator
                     nameTransform.sizeDelta = entryTitleDimensions;
                     offset += nameSize + spacing;
                     TMP_Text nameText = nameTransform.GetComponent<TMP_Text>();
-                    nameText.text = $"<size=40>{entry.names[j]}</size>";
+                    SetTextProperties(entry.names[j], creditsNameData, nameText);
                     nameText.alignment = TextAlignmentOptions.Center;
                 }
             }
