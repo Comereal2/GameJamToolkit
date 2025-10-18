@@ -4,6 +4,7 @@ using Types;
 
 namespace MainMenuLogic
 {
+    [ExecuteAlways]
     public class MenuManager : MonoBehaviour
     {
         public static MenuManager instance;

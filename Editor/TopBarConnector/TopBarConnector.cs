@@ -26,5 +26,11 @@ namespace Editor.TopBarConnector
         {
             EditorWindow.GetWindow<CreditsMenuCreatorEditorWindow>("Credits Menu Creator").Show();
         }
+
+        [MenuItem(menuName + uiEditorName + "/Load Game Menu", priority = 4)]
+        private static void DisplayCreateLoadGameMenu()
+        {
+            EditorWindow.GetWindow<LoadGameWindowEditorWindow>("Load Game Window Creator").Show();
+        }
     }
 }

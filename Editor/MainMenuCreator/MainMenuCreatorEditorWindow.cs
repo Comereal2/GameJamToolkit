@@ -273,10 +273,9 @@ namespace Editor.MainMenuCreator
                     buttonText.color = buttonProperties[i].textColor;
                     if (buttonProperties[i].textHasOutline)
                     {
-                        Material newButtonTextMat = new Material(buttonText.fontMaterial);
-                        newButtonTextMat.SetColor(outlineColorId, buttonProperties[i].textOutlineColor);
-                        newButtonTextMat.SetFloat(outlineThicknessId, buttonProperties[i].textOutlineThickness);
-                        buttonText.fontMaterial = newButtonTextMat;
+                        buttonText.fontMaterial = new Material(buttonText.fontMaterial);
+                        buttonText.outlineColor = buttonProperties[i].textOutlineColor;
+                        buttonText.outlineWidth = buttonProperties[i].textOutlineThickness;
                     }
                 }
                 else
@@ -292,10 +291,9 @@ namespace Editor.MainMenuCreator
                     buttonText.color = combinedButtonProperties.textColor;
                     if (combinedButtonProperties.textHasOutline)
                     {
-                        Material newButtonTextMat = new Material(buttonText.fontMaterial);
-                        newButtonTextMat.SetColor(outlineColorId, combinedButtonProperties.textOutlineColor);
-                        newButtonTextMat.SetFloat(outlineThicknessId, combinedButtonProperties.textOutlineThickness);
-                        buttonText.fontMaterial = newButtonTextMat;
+                        buttonText.fontMaterial = new Material(buttonText.fontMaterial);
+                        buttonText.outlineColor = combinedButtonProperties.textOutlineColor;
+                        buttonText.outlineWidth = combinedButtonProperties.textOutlineThickness;
                     }
                 }
                 
@@ -359,6 +357,10 @@ namespace Editor.MainMenuCreator
             }
 
             CreatePrefab(menuName);
+            
+            if (!GameObject.Find(Tags.creditsMenuTag)) GetWindow<CreditsMenuCreatorEditorWindow>("Credits Menu Creator").Show();
+            if (!GameObject.Find(Tags.settingsMenuTag)) GetWindow<SettingsMenuCreatorEditorWindow>("Settings Menu Creator").Show();
+            if (!GameObject.Find(Tags.loadGameMenuTag)) GetWindow<LoadGameWindowEditorWindow>("Load Game Window Creator").Show();
         }
     }
 }

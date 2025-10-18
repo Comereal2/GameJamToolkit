@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using MainMenuLogic;
 using TMPro;
+using Types;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -40,10 +42,12 @@ namespace Editor.MainMenuCreator
                 TextFontSize = d.TextFontSize;
             }
         }
+
+        private Material sdf_outlineMat;
         
         protected float spacing = 15f;
 
-        protected TextData titleData = new(textColor: Color.white, textOutlineColor: Color.black);
+        private TextData titleData = new(textColor: Color.white, textOutlineColor: Color.black);
         
         private bool isBackgroundSolidColor = true;
         private Sprite backgroundImage;
@@ -53,9 +57,6 @@ namespace Editor.MainMenuCreator
         private Vector2 scrollPos;
         
         protected bool saveMenuPressed = false;
-        
-        protected int outlineColorId = Shader.PropertyToID("_OutlineColor");
-        protected int outlineThicknessId = Shader.PropertyToID("_OutlineWidth");
 
         protected Transform menuParent;
         protected Transform eventSystem;
@@ -64,7 +65,10 @@ namespace Editor.MainMenuCreator
 
         protected void CreateObjectBase(string menuTag, string titleText)
         {
-            if (!MenuManager.instance) MenuManager.instance = new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
+            if (!FindAnyObjectByType<MenuManager>()) MenuManager.instance = new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
+            if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.sdf_outlineMatPath, typeof(Material));
+            
+            Debug.Log(AssetDatabase.GetAssetPath(this));
             
             GameObject leftoverMenu = GameObject.Find(menuTag);
             if(leftoverMenu) DestroyImmediate(leftoverMenu);
@@ -105,7 +109,7 @@ namespace Editor.MainMenuCreator
             if (!TryGetSelectedFolderPath(out string path)) return;
             path += $"/{menuName}.prefab";
             
-            PrefabUtility.SaveAsPrefabAsset(menuParent.gameObject, path);
+            PrefabUtility.SaveAsPrefabAssetAndConnect(menuParent.gameObject, path, InteractionMode.AutomatedAction);
             if (!keepOnScene) DestroyImmediate(menuParent.gameObject);
         }
 
@@ -159,12 +163,16 @@ namespace Editor.MainMenuCreator
             textComp.text = $"<size={data.TextFontSize}>{text}</size>";
             textComp.richText = true;
             textComp.color = data.TextColor;
+            SetOutlineProperties(data, textComp);
+        }
+
+        protected void SetOutlineProperties(TextData data, TMP_Text textComp)
+        {
             if (data.TextHasOutline)
             {
-                Material newTitleTextMat = new Material(textComp.fontMaterial);
-                newTitleTextMat.SetColor(outlineColorId, data.TextOutlineColor);
-                newTitleTextMat.SetFloat(outlineThicknessId, data.TextOutlineThickness);
-                textComp.fontMaterial = newTitleTextMat;
+                textComp.fontMaterial = new Material(sdf_outlineMat);
+                textComp.outlineColor = data.TextOutlineColor;
+                textComp.outlineWidth = data.TextOutlineThickness;
             }
         }
 

@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 
 namespace SaveSystem
 {
-    public class SaveManager : MonoBehaviour
+    public class SaveManager : ScriptableObject
     {
         [Readonly] [SerializeField] private List<object> monitoredVariables = new();
         [Readonly] [SerializeField] private List<MonoScript> scannableScripts = new();
@@ -35,6 +35,8 @@ namespace SaveSystem
         
         public void ReValidateMonitoredVariables()
         {
+            monitoredVariables.Clear();
+            
             Component[] allComponents = FindObjectsByType<Component>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             foreach (Component component in allComponents)
