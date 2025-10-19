@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using Types;
 using UnityEditor;
@@ -58,11 +57,22 @@ namespace Editor.MainMenuCreator
             private float playerPrefsFloatValue;
             private int playerPrefsIntValue;
             private string playerPrefsStringValue;
+
+            public BaseSettingsControlData(Enums.SettingsControlType controlType, Enums.PlayerPrefsDataTypes playerPrefsDataType, string playerPrefsKey, object playerPrefsValue)
+            {
+                ControlType = controlType;
+                PlayerPrefsDataType = playerPrefsDataType;
+                PlayerPrefsKey = playerPrefsKey;
+                playerPrefsFloatValue = 0f;
+                playerPrefsIntValue = 0;
+                playerPrefsStringValue = "";
+                PlayerPrefsValue = playerPrefsValue;
+            }
         }
         
         private ReorderableList settingsOptionsList;
 
-        private List<BaseSettingsControlData> settingsControlTypes;
+        private List<BaseSettingsControlData> settingsControlTypes = new();
 
         private void OnEnable()
         {
@@ -70,12 +80,51 @@ namespace Editor.MainMenuCreator
 
             settingsOptionsList.drawElementCallback = (rect, index, active, focused) =>
             {
+                var data = settingsControlTypes[index];
+
+                float halfWidth = rect.width / 2;
                 
+                data.ControlType = (Enums.SettingsControlType)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Control Type", data.ControlType);
+                if (data.ControlType is Enums.SettingsControlType.None or Enums.SettingsControlType.Button) return;
+                data.PlayerPrefsDataType = (Enums.PlayerPrefsDataTypes)EditorGUI.EnumPopup(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Data Type", data.PlayerPrefsDataType);
+                data.PlayerPrefsKey = EditorGUI.TextField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Key", data.PlayerPrefsKey);
+                data.PlayerPrefsValue = data.PlayerPrefsDataType switch
+                {
+                    Enums.PlayerPrefsDataTypes.Int => EditorGUI.IntField(
+                        new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
+                        (int)data.PlayerPrefsValue),
+                    Enums.PlayerPrefsDataTypes.Float => EditorGUI.FloatField(
+                        new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
+                        (float)data.PlayerPrefsValue),
+                    Enums.PlayerPrefsDataTypes.String => EditorGUI.TextField(
+                        new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
+                        (string)data.PlayerPrefsValue),
+                    _ => data.PlayerPrefsValue
+                };
+
+                settingsControlTypes[index] = data;
+            };
+
+            settingsOptionsList.elementHeightCallback = index =>
+            {
+                switch (settingsControlTypes[index].ControlType)
+                {
+                    case Enums.SettingsControlType.Dropdown:
+                    case Enums.SettingsControlType.InputField:
+                    case Enums.SettingsControlType.Slider:
+                    case Enums.SettingsControlType.Toggle:
+                        return EditorGUIUtility.singleLineHeight * 2;
+                    
+                    case Enums.SettingsControlType.Button:
+                    case Enums.SettingsControlType.None:
+                    default:
+                        return EditorGUIUtility.singleLineHeight;
+                }
             };
             
             settingsOptionsList.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Options");
 
-            settingsOptionsList.onAddCallback = list => settingsControlTypes.Add(new BaseSettingsControlData());
+            settingsOptionsList.onAddCallback = list => settingsControlTypes.Add(new BaseSettingsControlData(Enums.SettingsControlType.None, Enums.PlayerPrefsDataTypes.None, "defalutKey", null));
 
             settingsOptionsList.onRemoveCallback = list => settingsControlTypes.RemoveAt(list.index);
         }
@@ -83,6 +132,8 @@ namespace Editor.MainMenuCreator
         private void OnGUI()
         {
             DisplayStartSettings("Settings Title Settings");
+            
+            settingsOptionsList.DoLayoutList();
             
             DisplayEndSettings();
             
