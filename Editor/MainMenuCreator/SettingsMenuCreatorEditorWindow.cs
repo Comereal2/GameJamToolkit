@@ -28,6 +28,7 @@ namespace Editor.MainMenuCreator
                         case Enums.PlayerPrefsDataTypes.String:
                             return playerPrefsStringValue;
                         case Enums.PlayerPrefsDataTypes.None:
+                            return null;
                         default:
                             Debug.LogWarning("Could not retrieve value: Invalid Type");
                             return null;
@@ -47,12 +48,15 @@ namespace Editor.MainMenuCreator
                             playerPrefsStringValue = (string)value;
                             break;
                         case Enums.PlayerPrefsDataTypes.None:
+                            break;
                         default:
                             Debug.LogWarning("Could not set value: Invalid Type");
-                            break;
+                            return;
                     }
                 }
             }
+
+            public Vector2 SliderBoundaries;
 
             private float playerPrefsFloatValue;
             private int playerPrefsIntValue;
@@ -66,6 +70,7 @@ namespace Editor.MainMenuCreator
                 playerPrefsFloatValue = 0f;
                 playerPrefsIntValue = 0;
                 playerPrefsStringValue = "";
+                SliderBoundaries = Vector2.zero;
                 PlayerPrefsValue = playerPrefsValue;
             }
         }
@@ -85,22 +90,74 @@ namespace Editor.MainMenuCreator
                 float halfWidth = rect.width / 2;
                 
                 data.ControlType = (Enums.SettingsControlType)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Control Type", data.ControlType);
-                if (data.ControlType is Enums.SettingsControlType.None or Enums.SettingsControlType.Button) return;
-                data.PlayerPrefsDataType = (Enums.PlayerPrefsDataTypes)EditorGUI.EnumPopup(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Data Type", data.PlayerPrefsDataType);
-                data.PlayerPrefsKey = EditorGUI.TextField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Key", data.PlayerPrefsKey);
-                data.PlayerPrefsValue = data.PlayerPrefsDataType switch
+                if (data.ControlType is Enums.SettingsControlType.None or Enums.SettingsControlType.Button)
                 {
-                    Enums.PlayerPrefsDataTypes.Int => EditorGUI.IntField(
-                        new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
-                        (int)data.PlayerPrefsValue),
-                    Enums.PlayerPrefsDataTypes.Float => EditorGUI.FloatField(
-                        new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
-                        (float)data.PlayerPrefsValue),
-                    Enums.PlayerPrefsDataTypes.String => EditorGUI.TextField(
-                        new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
-                        (string)data.PlayerPrefsValue),
-                    _ => data.PlayerPrefsValue
-                };
+                    settingsControlTypes[index] = data;
+                    return;
+                }
+
+                if (data.ControlType is Enums.SettingsControlType.Toggle or Enums.SettingsControlType.Dropdown)
+                {
+                    data.PlayerPrefsDataType = Enums.PlayerPrefsDataTypes.Int;
+                    GUI.enabled = false;
+                    EditorGUI.EnumPopup(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Data Type", data.PlayerPrefsDataType);
+                    GUI.enabled = true;
+                }
+                else if (data.ControlType is Enums.SettingsControlType.Slider)
+                {
+                    data.PlayerPrefsDataType = EditorGUI.Popup(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Data Type", 
+                        data.PlayerPrefsDataType is Enums.PlayerPrefsDataTypes.Int ? 0 : 1, new[] { "Int", "Float" }) == 0 ? Enums.PlayerPrefsDataTypes.Int : Enums.PlayerPrefsDataTypes.Float;
+                }
+                else
+                {
+                    data.PlayerPrefsDataType = (Enums.PlayerPrefsDataTypes)EditorGUI.EnumPopup(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Data Type", data.PlayerPrefsDataType);
+                }
+                
+                data.PlayerPrefsKey = EditorGUI.TextField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Player Prefs Key", data.PlayerPrefsKey);
+
+                if (data.ControlType is Enums.SettingsControlType.Toggle)
+                {
+                    if ((int)data.PlayerPrefsValue != 0 && (int)data.PlayerPrefsValue != 1) data.PlayerPrefsValue = 0;
+                    data.PlayerPrefsValue = EditorGUI.Toggle(new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value", (int)data.PlayerPrefsValue == 1) ? 1 : 0;
+                }
+                else if (data.ControlType is Enums.SettingsControlType.Dropdown)
+                {
+                    data.PlayerPrefsValue = EditorGUI.IntField(new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Selection Index", (int)data.PlayerPrefsValue);
+                }
+                else
+                {
+                    data.PlayerPrefsValue = data.PlayerPrefsDataType switch
+                    {
+                        Enums.PlayerPrefsDataTypes.Int => EditorGUI.IntField(
+                            new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
+                            (int)data.PlayerPrefsValue),
+                        Enums.PlayerPrefsDataTypes.Float => EditorGUI.FloatField(
+                            new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
+                            (float)data.PlayerPrefsValue),
+                        Enums.PlayerPrefsDataTypes.String => EditorGUI.TextField(
+                            new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value",
+                            (string)data.PlayerPrefsValue),
+                        _ => data.PlayerPrefsValue
+                    };
+                }
+
+                if (data.ControlType is Enums.SettingsControlType.Slider)
+                {
+                    if (data.PlayerPrefsDataType is Enums.PlayerPrefsDataTypes.Int)
+                    {
+                        data.SliderBoundaries.x = EditorGUI.IntField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", (int)data.SliderBoundaries.x);
+                        data.SliderBoundaries.y = EditorGUI.IntField(new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", (int)data.SliderBoundaries.y);
+                    }
+                    else if (data.PlayerPrefsDataType is Enums.PlayerPrefsDataTypes.Float)
+                    {
+                        data.SliderBoundaries.x = EditorGUI.FloatField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", data.SliderBoundaries.x);
+                        data.SliderBoundaries.y = EditorGUI.FloatField(new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", data.SliderBoundaries.y);
+                    }
+                    else
+                    {
+                        data.PlayerPrefsDataType = Enums.PlayerPrefsDataTypes.Int;
+                    }
+                }
 
                 settingsControlTypes[index] = data;
             };
@@ -111,9 +168,11 @@ namespace Editor.MainMenuCreator
                 {
                     case Enums.SettingsControlType.Dropdown:
                     case Enums.SettingsControlType.InputField:
-                    case Enums.SettingsControlType.Slider:
                     case Enums.SettingsControlType.Toggle:
                         return EditorGUIUtility.singleLineHeight * 2;
+                    
+                    case Enums.SettingsControlType.Slider:
+                        return EditorGUIUtility.singleLineHeight * 3;
                     
                     case Enums.SettingsControlType.Button:
                     case Enums.SettingsControlType.None:

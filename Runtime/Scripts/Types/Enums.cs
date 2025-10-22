@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using PlasticGui;
-
-namespace Types
+﻿namespace Types
 {
     public class Enums
     {
@@ -34,13 +30,5 @@ namespace Types
             Float,
             String
         }
-
-        public static Dictionary<PlayerPrefsDataTypes, Type> EnumDataToType { get; } = new()
-        {
-            { PlayerPrefsDataTypes.None, typeof(object) },
-            { PlayerPrefsDataTypes.Int, typeof(int) },
-            { PlayerPrefsDataTypes.Float, typeof(float) },
-            { PlayerPrefsDataTypes.String, typeof(string) }
-        };
     }
 }
