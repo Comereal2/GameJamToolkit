@@ -207,7 +207,6 @@ namespace Editor.MainMenuCreator
                         GUI.enabled = true;
                         if ((int)data.PlayerPrefsValue != 0 && (int)data.PlayerPrefsValue != 1) data.PlayerPrefsValue = 0;
                         data.PlayerPrefsValue = EditorGUI.Toggle(new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Default Value", (int)data.PlayerPrefsValue == 1) ? 1 : 0;
-                        data.DisplayText = EditorGUI.TextField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Display Text", data.DisplayText);
                         break;
                     }
                     default:
@@ -289,7 +288,7 @@ namespace Editor.MainMenuCreator
                         con.gameObject.AddComponent<Image>();
                         con.gameObject.AddComponent<Button>();
                         con.sizeDelta = buttonSize;
-                        con.anchoredPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y + offset);
+                        con.anchoredPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y - offset);
                         offset += buttonSize.y + settingsOptionsSpacing;
                         TMP_Text buttonText = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
@@ -307,11 +306,19 @@ namespace Editor.MainMenuCreator
                     case Enums.SettingsControlType.Slider:
                         break;
                     case Enums.SettingsControlType.Toggle:
-                        con.gameObject.AddComponent<Toggle>();
+                        con.gameObject.AddComponent<Toggle>().isOn = ((int)control.PlayerPrefsValue) == 1;
                         RectTransform tBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        RectTransform tCheckmark = new GameObject("Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        tCheckmark.SetParent(tBackground);
+                        tCheckmark.GetComponent<Image>().sprite = Resources.Load<Sprite>("Resources/unity_builtin_extra/Checkmark");
                         tBackground.SetParent(con);
-                        RectTransform tLabel = Instantiate(title.gameObject, con.transform).GetComponent<RectTransform>();
-                        
+                        TMP_Text tLabel = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
+                        tLabel.text = control.DisplayText;
+                        tLabel.transform.SetParent(con);
+                        tLabel.rectTransform.anchoredPosition = new Vector2(150f, 0);
+                        con.sizeDelta = buttonSize;
+                        con.anchoredPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y - offset);
+                        offset += buttonSize.y + settingsOptionsSpacing;
                         break;
                     default:
                         Debug.LogWarning("Settings type not recognized - Instantiation");
