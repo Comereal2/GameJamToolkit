@@ -319,7 +319,7 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            button.GetComponent<Button>().onClick.AddListener(() => MenuManager.instance.Play(playSceneBuildIndex));
+                            button.GetComponent<Button>().onClick.AddListener(() => MenuManager.Instance.Play(playSceneBuildIndex));
                         }
                         buttonText.text += "Play</size>";
                         break;
@@ -330,24 +330,24 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            button.GetComponent<Button>().onClick.AddListener(() => MenuManager.instance.Play(playSceneBuildIndex));
+                            button.GetComponent<Button>().onClick.AddListener(() => MenuManager.Instance.Play(playSceneBuildIndex));
                         }
                         buttonText.text += "New Game</size>";
                         break;
                     case Enums.MainMenuButtonTypes.LoadGame:
-                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.OpenLoadMenu);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.OpenLoadMenu);
                         buttonText.text += "Load Save</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Settings:
-                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.OpenSettings);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.OpenSettings);
                         buttonText.text += "Settings</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Credits:
-                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.OpenCredits);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.OpenCredits);
                         buttonText.text += "Credits</size>";
                         break;
                     case Enums.MainMenuButtonTypes.Quit:
-                        button.GetComponent<Button>().onClick.AddListener(MenuManager.instance.QuitGame);
+                        button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.QuitGame);
                         buttonText.text += "Quit</size>";
                         break;
                     default:

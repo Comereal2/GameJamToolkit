@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using Types;
 
@@ -7,7 +8,7 @@ namespace MainMenuLogic
     [ExecuteAlways]
     public class MenuManager : MonoBehaviour
     {
-        public static MenuManager instance;
+        public static MenuManager Instance;
 
         private GameObject mainMenu;
         private GameObject creditsMenu;
@@ -16,7 +17,16 @@ namespace MainMenuLogic
         
         private void Awake()
         {
-            instance = this;
+            Instance = this;
+            if (!mainMenu) mainMenu = GameObject.Find(Tags.mainMenuTag);
+            if (!creditsMenu) creditsMenu = GameObject.Find(Tags.creditsMenuTag);
+            if (!settingsMenu) settingsMenu = GameObject.Find(Tags.settingsMenuTag);
+            if (!loadGameMenu) loadGameMenu = GameObject.Find(Tags.loadGameMenuTag);
+        }
+
+        private void Update()
+        {
+            if (!Instance) Instance = this;
             if (!mainMenu) mainMenu = GameObject.Find(Tags.mainMenuTag);
             if (!creditsMenu) creditsMenu = GameObject.Find(Tags.creditsMenuTag);
             if (!settingsMenu) settingsMenu = GameObject.Find(Tags.settingsMenuTag);
@@ -25,7 +35,7 @@ namespace MainMenuLogic
 
         private void OnDestroy()
         {
-            instance = null;
+            Instance = null;
         }
         
         public void Play(int sceneIndex)
