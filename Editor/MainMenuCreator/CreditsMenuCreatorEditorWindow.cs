@@ -157,6 +157,8 @@ namespace Editor.MainMenuCreator
             scrollBehavior.scrollingEnd = offset - startingY;
             scrollBehavior.backButton = button.gameObject;
             
+            menuParent.gameObject.SetActive(false);
+            
             CreatePrefab(menuName);
         }
     }

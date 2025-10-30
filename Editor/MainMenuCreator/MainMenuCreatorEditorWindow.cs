@@ -319,7 +319,7 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            UnityEditor.Events.UnityEventTools.AddIntPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.Play, playSceneBuildIndex);
+                            UnityEditor.Events.UnityEventTools.AddIntPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Play, playSceneBuildIndex);
                         }
                         buttonText.text += "Play</size>";
                         break;
@@ -330,27 +330,27 @@ namespace Editor.MainMenuCreator
                         }
                         else
                         {
-                            UnityEditor.Events.UnityEventTools.AddIntPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.Play, playSceneBuildIndex);
+                            UnityEditor.Events.UnityEventTools.AddIntPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Play, playSceneBuildIndex);
                         }
                         buttonText.text += "New Game</size>";
                         break;
                     case Enums.MainMenuButtonTypes.LoadGame:
-                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.OpenLoadMenu);
+                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.OpenLoadMenu);
                         buttonText.text += "Load Save</size>";
                         requireLoadMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Settings:
-                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.OpenSettings);
+                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.OpenSettings);
                         buttonText.text += "Settings</size>";
                         requireSettingsMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Credits:
-                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.OpenCredits);
+                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.OpenCredits);
                         buttonText.text += "Credits</size>";
                         requireCreditsMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Quit:
-                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.QuitGame);
+                        UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.QuitGame);
                         buttonText.text += "Quit</size>";
                         break;
                     default:

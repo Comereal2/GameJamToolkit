@@ -244,7 +244,7 @@ namespace Editor.MainMenuCreator
             
             settingsOptionsList.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Options");
 
-            settingsOptionsList.onAddCallback = list => settingsControlTypes.Add(new BaseSettingsControlData(Enums.SettingsControlType.None, Enums.PlayerPrefsDataTypes.None, "defalutKey", "Setting", null));
+            settingsOptionsList.onAddCallback = list => settingsControlTypes.Add(new BaseSettingsControlData(Enums.SettingsControlType.None, Enums.PlayerPrefsDataTypes.None, "defaultKey", "Setting", null));
 
             settingsOptionsList.onRemoveCallback = list => settingsControlTypes.RemoveAt(list.index);
         }
@@ -362,6 +362,8 @@ namespace Editor.MainMenuCreator
             button.sizeDelta = buttonSize;
             button.anchoredPosition = new Vector2(0, -450f);
             button.GetComponentInChildren<TMP_Text>().text = "<size=36>Back</size>";
+            
+            menuParent.gameObject.SetActive(false);
             
             CreatePrefab(menuName);
         }

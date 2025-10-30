@@ -8,7 +8,7 @@
         public const string SDFOutlineMatPath = MaterialFolderPath + "sdf_outlinemat.mat";
 
         public const string SpritesFolderPath = PackagePath + "Sprites/";
-        public const string CheckmarkSpritePath = SpritesFolderPath + "Checkmark";
+        public const string CheckmarkSpritePath = SpritesFolderPath + "UICheckMark.png";
         public const string KnobSpritePath = SpritesFolderPath + "Knob";
     }
 }

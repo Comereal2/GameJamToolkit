@@ -7,7 +7,7 @@ namespace MainMenuLogic
     [ExecuteAlways]
     public class MenuManager : MonoBehaviour
     {
-        public static MenuManager Instance;
+        private static MenuManager Instance;
 
         private GameObject mainMenu;
         private GameObject creditsMenu;
@@ -37,46 +37,46 @@ namespace MainMenuLogic
             Instance = null;
         }
         
-        public void Play(int sceneIndex)
+        public static void Play(int sceneIndex)
         {
             SceneManager.LoadScene(sceneIndex);
         }
 
-        public void OpenSettings()
+        public static void OpenSettings()
         {
-            mainMenu?.SetActive(false);
-            creditsMenu?.SetActive(false);
-            settingsMenu?.SetActive(true);
-            loadGameMenu?.SetActive(false);
+            Instance.mainMenu?.SetActive(false);
+            Instance.creditsMenu?.SetActive(false);
+            Instance.settingsMenu?.SetActive(true);
+            Instance.loadGameMenu?.SetActive(false);
         }
 
-        public void OpenCredits()
+        public static void OpenCredits()
         {
-            mainMenu?.SetActive(false);
-            creditsMenu?.SetActive(true);
-            settingsMenu?.SetActive(false);
-            loadGameMenu?.SetActive(false);
+            Instance.mainMenu?.SetActive(false);
+            Instance.creditsMenu?.SetActive(true);
+            Instance.settingsMenu?.SetActive(false);
+            Instance.loadGameMenu?.SetActive(false);
         }
 
-        public void QuitGame()
+        public static void QuitGame()
         {
             Application.Quit();
         }
 
-        public void OpenLoadMenu()
+        public static void OpenLoadMenu()
         {
-            mainMenu?.SetActive(false);
-            creditsMenu?.SetActive(false);
-            settingsMenu?.SetActive(false);
-            loadGameMenu?.SetActive(true);
+            Instance.mainMenu?.SetActive(false);
+            Instance.creditsMenu?.SetActive(false);
+            Instance.settingsMenu?.SetActive(false);
+            Instance.loadGameMenu?.SetActive(true);
         }
 
-        public void BackButton()
+        public static void BackButton()
         {
-            mainMenu?.SetActive(true);
-            creditsMenu?.SetActive(false);
-            settingsMenu?.SetActive(false);
-            loadGameMenu?.SetActive(false);
+            Instance.mainMenu?.SetActive(true);
+            Instance.creditsMenu?.SetActive(false);
+            Instance.settingsMenu?.SetActive(false);
+            Instance.loadGameMenu?.SetActive(false);
         }
     }
 }

@@ -64,10 +64,8 @@ namespace Editor.MainMenuCreator
 
         protected void CreateObjectBase(string menuTag, string titleText)
         {
-            if (!FindAnyObjectByType<MenuManager>()) MenuManager.Instance = new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
+            if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
             if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
-            
-            Debug.Log(AssetDatabase.GetAssetPath(this));
             
             GameObject leftoverMenu = GameObject.Find(menuTag);
             if(leftoverMenu) DestroyImmediate(leftoverMenu);
@@ -178,7 +176,7 @@ namespace Editor.MainMenuCreator
         protected RectTransform CreateBackButton()
         {
             RectTransform button = new GameObject("Back Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button)).GetComponent<RectTransform>();
-            UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.BackButton);
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.BackButton);
             TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
             RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
             buttonTextRect.sizeDelta = button.sizeDelta;
