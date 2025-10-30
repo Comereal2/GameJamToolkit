@@ -178,7 +178,7 @@ namespace Editor.MainMenuCreator
         protected RectTransform CreateBackButton()
         {
             RectTransform button = new GameObject("Back Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button)).GetComponent<RectTransform>();
-            button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.BackButton);
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Instance.BackButton);
             TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
             RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
             buttonTextRect.sizeDelta = button.sizeDelta;

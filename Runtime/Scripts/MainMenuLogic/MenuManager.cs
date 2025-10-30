@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using Types;
 
@@ -45,18 +44,18 @@ namespace MainMenuLogic
 
         public void OpenSettings()
         {
-            mainMenu.SetActive(false);
-            creditsMenu.SetActive(false);
-            settingsMenu.SetActive(true);
-            loadGameMenu.SetActive(false);
+            mainMenu?.SetActive(false);
+            creditsMenu?.SetActive(false);
+            settingsMenu?.SetActive(true);
+            loadGameMenu?.SetActive(false);
         }
 
         public void OpenCredits()
         {
-            mainMenu.SetActive(false);
-            creditsMenu.SetActive(true);
-            settingsMenu.SetActive(false);
-            loadGameMenu.SetActive(false);
+            mainMenu?.SetActive(false);
+            creditsMenu?.SetActive(true);
+            settingsMenu?.SetActive(false);
+            loadGameMenu?.SetActive(false);
         }
 
         public void QuitGame()
@@ -66,18 +65,18 @@ namespace MainMenuLogic
 
         public void OpenLoadMenu()
         {
-            mainMenu.SetActive(false);
-            creditsMenu.SetActive(false);
-            settingsMenu.SetActive(false);
-            loadGameMenu.SetActive(true);
+            mainMenu?.SetActive(false);
+            creditsMenu?.SetActive(false);
+            settingsMenu?.SetActive(false);
+            loadGameMenu?.SetActive(true);
         }
 
         public void BackButton()
         {
-            mainMenu.SetActive(true);
-            creditsMenu.SetActive(false);
-            settingsMenu.SetActive(false);
-            loadGameMenu.SetActive(false);
+            mainMenu?.SetActive(true);
+            creditsMenu?.SetActive(false);
+            settingsMenu?.SetActive(false);
+            loadGameMenu?.SetActive(false);
         }
     }
 }

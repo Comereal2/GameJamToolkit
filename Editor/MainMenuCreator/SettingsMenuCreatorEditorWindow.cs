@@ -92,6 +92,9 @@ namespace Editor.MainMenuCreator
         private Vector2 defaultSettingsStartPos = new Vector2(0, 350f);
         private Vector2 buttonSize = new(300f, 100f);
 
+        private Sprite checkmark;
+        private Sprite knob;
+
         private void OnEnable()
         {
             settingsOptionsList = new ReorderableList(settingsControlTypes, typeof(BaseSettingsControlData), true, true, true, true);
@@ -270,6 +273,8 @@ namespace Editor.MainMenuCreator
 
         private void CreatePrefab()
         {
+            if (!checkmark) checkmark = (Sprite)AssetDatabase.LoadAssetAtPath(Consts.CheckmarkSpritePath, typeof(Sprite));
+            if (!knob) knob = (Sprite)AssetDatabase.LoadAssetAtPath(Consts.KnobSpritePath, typeof(Sprite));
             string menuName = "SettingsMenuPrefab";
             CreateObjectBase(Tags.settingsMenuTag, "Settings");
             title.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
@@ -315,13 +320,28 @@ namespace Editor.MainMenuCreator
                         }
                         else slider.value = (float)control.PlayerPrefsValue;
                         
+                        RectTransform sBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        sBackground.SetParent(con);
+                        
+                        Transform sFillArea = new GameObject("Fill Area", typeof(RectTransform)).transform;
+                        RectTransform sFill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        sFillArea.SetParent(con);
+                        sFill.SetParent(sFillArea);
+                        slider.fillRect = sFill;
+                        
+                        Transform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).transform;
+                        RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        sHandleSlideArea.SetParent(con);
+                        sHandle.SetParent(sHandleSlideArea);
+                        sHandle.GetComponent<Image>().sprite = knob;
+                        slider.handleRect = sHandle;
                         break;
                     case Enums.SettingsControlType.Toggle:
                         con.gameObject.AddComponent<Toggle>().isOn = ((int)control.PlayerPrefsValue) == 1;
                         RectTransform tBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         RectTransform tCheckmark = new GameObject("Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         tCheckmark.SetParent(tBackground);
-                        tCheckmark.GetComponent<Image>().sprite = Resources.Load<Sprite>("Resources/unity_builtin_extra/Checkmark");
+                        tCheckmark.GetComponent<Image>().sprite = checkmark;
                         tBackground.SetParent(con);
                         TMP_Text tLabel = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         tLabel.text = control.DisplayText;
