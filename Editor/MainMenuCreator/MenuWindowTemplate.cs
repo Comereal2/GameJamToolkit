@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using MainMenuLogic;
 using TMPro;
 using Types;
@@ -52,7 +51,7 @@ namespace Editor.MainMenuCreator
         private bool isBackgroundSolidColor = true;
         private Sprite backgroundImage;
         private Color backgroundColor = Color.black;
-        private bool keepOnScene = false;
+        private bool keepOnScene = true;
 
         private Vector2 scrollPos;
         
@@ -66,7 +65,7 @@ namespace Editor.MainMenuCreator
         protected void CreateObjectBase(string menuTag, string titleText)
         {
             if (!FindAnyObjectByType<MenuManager>()) MenuManager.Instance = new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
-            if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.sdf_outlineMatPath, typeof(Material));
+            if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
             
             Debug.Log(AssetDatabase.GetAssetPath(this));
             
@@ -82,12 +81,12 @@ namespace Editor.MainMenuCreator
 #if !ENABLE_INPUT_SYSTEM
             eventSystem.gameObject.AddComponent<StandaloneInputModule>();
 #endif
+                eventSystem.SetParent(menuParent);
             }
             else eventSystem = FindAnyObjectByType<EventSystem>().transform;
             menuCanvas = new GameObject("Menu Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster)).transform;
             title = new GameObject("Title", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).transform;
             
-            eventSystem.SetParent(menuParent);
             menuCanvas.SetParent(menuParent);
             CreateBackground();
             title.SetParent(menuCanvas);

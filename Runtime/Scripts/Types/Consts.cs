@@ -2,7 +2,11 @@
 {
     public class Consts
     {
-        public const string packagePath = "Packages/com.comereal.gamejamtoolkit/";
-        public const string sdf_outlineMatPath = packagePath + "Materials/sdf_outlinemat.mat";
+        public const string PackagePath = "Packages/com.comereal.gamejamtoolkit/";
+
+        public const string MaterialFolderPath = PackagePath + "Materials/";
+        public const string SDFOutlineMatPath = MaterialFolderPath + "sdf_outlinemat.mat";
+
+        public const string SpritesFolderPath = PackagePath + "Sprites/";
     }
 }

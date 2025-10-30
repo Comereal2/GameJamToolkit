@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using Types;
 using UnityEditor;
@@ -197,6 +196,8 @@ namespace Editor.MainMenuCreator
                             data.PlayerPrefsDataType = Enums.PlayerPrefsDataTypes.Int;
                         }
 
+                        if (data.SliderBoundaries.y < data.SliderBoundaries.x) data.SliderBoundaries.y = data.SliderBoundaries.x;
+                        
                         break;
                     }
                     case Enums.SettingsControlType.Toggle:
@@ -304,6 +305,16 @@ namespace Editor.MainMenuCreator
                     case Enums.SettingsControlType.InputField:
                         break;
                     case Enums.SettingsControlType.Slider:
+                        Slider slider = con.gameObject.AddComponent<Slider>();
+                        slider.minValue = control.SliderBoundaries.x;
+                        slider.maxValue = control.SliderBoundaries.y;
+                        if (control.PlayerPrefsDataType == Enums.PlayerPrefsDataTypes.Int)
+                        {
+                            slider.wholeNumbers = true;
+                            slider.value = (int)control.PlayerPrefsValue;
+                        }
+                        else slider.value = (float)control.PlayerPrefsValue;
+                        
                         break;
                     case Enums.SettingsControlType.Toggle:
                         con.gameObject.AddComponent<Toggle>().isOn = ((int)control.PlayerPrefsValue) == 1;
