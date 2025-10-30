@@ -65,6 +65,10 @@ namespace Editor.MainMenuCreator
             new ButtonProperties(true, null, Color.white, Color.white, true, Color.black, 0.1f)
         };
 
+        private bool requireLoadMenu = false;
+        private bool requireSettingsMenu = false;
+        private bool requireCreditsMenu = false;
+
         private void OnEnable()
         {
             if (buttons.Count == 0)
@@ -337,14 +341,17 @@ namespace Editor.MainMenuCreator
                     case Enums.MainMenuButtonTypes.LoadGame:
                         button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.OpenLoadMenu);
                         buttonText.text += "Load Save</size>";
+                        requireLoadMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Settings:
                         button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.OpenSettings);
                         buttonText.text += "Settings</size>";
+                        requireSettingsMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Credits:
                         button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.OpenCredits);
                         buttonText.text += "Credits</size>";
+                        requireCreditsMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Quit:
                         button.GetComponent<Button>().onClick.AddListener(MenuManager.Instance.QuitGame);
@@ -358,9 +365,9 @@ namespace Editor.MainMenuCreator
 
             CreatePrefab(menuName);
             
-            if (!GameObject.Find(Tags.creditsMenuTag)) GetWindow<CreditsMenuCreatorEditorWindow>("Credits Menu Creator").Show();
-            if (!GameObject.Find(Tags.settingsMenuTag)) GetWindow<SettingsMenuCreatorEditorWindow>("Settings Menu Creator").Show();
-            if (!GameObject.Find(Tags.loadGameMenuTag)) GetWindow<LoadGameWindowEditorWindow>("Load Game Window Creator").Show();
+            if (!GameObject.Find(Tags.creditsMenuTag) && requireCreditsMenu) GetWindow<CreditsMenuCreatorEditorWindow>("Credits Menu Creator").Show();
+            if (!GameObject.Find(Tags.settingsMenuTag) && requireSettingsMenu) GetWindow<SettingsMenuCreatorEditorWindow>("Settings Menu Creator").Show();
+            if (!GameObject.Find(Tags.loadGameMenuTag) && requireLoadMenu) GetWindow<LoadGameWindowEditorWindow>("Load Game Window Creator").Show();
         }
     }
 }
