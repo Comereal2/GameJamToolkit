@@ -95,6 +95,7 @@ namespace Editor.MainMenuCreator
 
         private Sprite checkmark;
         private Sprite knob;
+        private Sprite uiSprite;
 
         private void OnEnable()
         {
@@ -279,8 +280,9 @@ namespace Editor.MainMenuCreator
 
         private void CreatePrefab()
         {
-            if (!checkmark) checkmark = (Sprite)AssetDatabase.LoadAssetAtPath(Consts.CheckmarkSpritePath, typeof(Sprite));
-            if (!knob) knob = (Sprite)AssetDatabase.LoadAssetAtPath(Consts.KnobSpritePath, typeof(Sprite));
+            if (!checkmark) checkmark = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.CheckmarkSpritePath);
+            if (!knob) knob = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.KnobSpritePath);
+            if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
             string menuName = "SettingsMenuPrefab";
             CreateObjectBase<SettingsMenuScript>(Tags.settingsMenuTag, "Settings");
             title.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
@@ -328,19 +330,37 @@ namespace Editor.MainMenuCreator
                         
                         RectTransform sBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sBackground.SetParent(con);
+                        sBackground.anchorMin = new Vector2(0, 0.25f);
+                        sBackground.anchorMax = new Vector2(1, 0.75f);
+                        sBackground.anchoredPosition = Vector2.zero;
+                        sBackground.sizeDelta = Vector2.zero;
                         
-                        Transform sFillArea = new GameObject("Fill Area", typeof(RectTransform)).transform;
-                        RectTransform sFill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        RectTransform sFillArea = new GameObject("Fill Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sFillArea.SetParent(con);
+                        sFillArea.anchorMin = new Vector2(0, 0.25f);
+                        sFillArea.anchorMax = new Vector2(1, 0.75f);
+                        sFillArea.anchoredPosition = Vector2.zero;
+                        
+                        RectTransform sFill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sFill.SetParent(sFillArea);
                         slider.fillRect = sFill;
+                        sFill.anchorMin = Vector2.zero;
+                        sFill.anchorMax = Vector2.up;
+                        sFill.anchoredPosition = Vector2.zero;
+                        sFill.GetComponent<Image>().sprite = uiSprite;
                         
-                        Transform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).transform;
-                        RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        RectTransform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
+                        sHandleSlideArea.anchoredPosition = Vector2.zero;
+                        
+                        RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        Image sHandleImage = sHandle.GetComponent<Image>();
                         sHandle.SetParent(sHandleSlideArea);
-                        //sHandle.GetComponent<Image>().sprite = knob;
                         slider.handleRect = sHandle;
+                        slider.targetGraphic = sHandleImage;
+                        sHandleImage.sprite = knob;
+                        sHandle.anchoredPosition = Vector2.zero;
+                        
                         break;
                     case Enums.SettingsControlType.Toggle:
                         Toggle t = con.gameObject.AddComponent<Toggle>();

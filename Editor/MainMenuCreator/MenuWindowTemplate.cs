@@ -69,7 +69,7 @@ namespace Editor.MainMenuCreator
             if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
             if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
             
-            GameObject leftoverMenu = FindFirstObjectByType<T>().gameObject;
+            GameObject leftoverMenu = FindFirstObjectByType<T>()?.gameObject;
             if(leftoverMenu) DestroyImmediate(leftoverMenu);
             menuParent = new GameObject(menuTag).transform;
             menuParent.gameObject.AddComponent<T>();

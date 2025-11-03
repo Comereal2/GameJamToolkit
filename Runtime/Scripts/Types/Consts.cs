@@ -6,9 +6,25 @@
 
         public const string MaterialFolderPath = PackagePath + "Materials/";
         public const string SDFOutlineMatPath = MaterialFolderPath + "sdf_outlinemat.mat";
+        
+        /// <summary>
+        /// This variable requires the use of <see cref="UnityEditor.AssetDatabase"/>.<see cref="UnityEditor.AssetDatabase.GetBuiltinExtraResource"/> to retrieve the sprite.
+        /// </summary>
+        public const string UnityUISpritesPath = "UI/Skin/";
+        
+        /// <summary>
+        /// <inheritdoc cref="UnityUISpritesPath"/>
+        /// </summary>
+        public const string CheckmarkSpritePath = UnityUISpritesPath + "Checkmark.psd";
+        
+        /// <summary>
+        /// <inheritdoc cref="UnityUISpritesPath"/>
+        /// </summary>
+        public const string KnobSpritePath = UnityUISpritesPath + "Knob.psd";
 
-        public const string SpritesFolderPath = PackagePath + "Sprites/";
-        public const string CheckmarkSpritePath = SpritesFolderPath + "UICheckMark.png";
-        public const string KnobSpritePath = SpritesFolderPath + "Knob";
+        /// <summary>
+        /// <inheritdoc cref="UnityUISpritesPath"/>
+        /// </summary>
+        public const string UISpriteSpritePath = UnityUISpritesPath + "UISprite.psd";
     }
 }
