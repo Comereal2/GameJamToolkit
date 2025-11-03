@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using MainMenuLogic;
 using TMPro;
 using Types;
@@ -7,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Editor.MainMenuCreator
 {
@@ -62,14 +64,15 @@ namespace Editor.MainMenuCreator
         protected Transform menuCanvas;
         protected Transform title;
 
-        protected void CreateObjectBase(string menuTag, string titleText)
+        protected void CreateObjectBase<T>(string menuTag, string titleText) where T : MonoBehaviour
         {
             if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
             if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
             
-            GameObject leftoverMenu = GameObject.Find(menuTag);
+            GameObject leftoverMenu = FindFirstObjectByType<T>().gameObject;
             if(leftoverMenu) DestroyImmediate(leftoverMenu);
             menuParent = new GameObject(menuTag).transform;
+            menuParent.gameObject.AddComponent<T>();
             if (!FindAnyObjectByType<EventSystem>())
             {
                 eventSystem = new GameObject("EventSystem", typeof(EventSystem)).transform;

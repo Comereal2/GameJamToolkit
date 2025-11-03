@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MainMenuLogic;
+using MainMenuLogic.MenuObjectDetectorScripts;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -227,7 +228,7 @@ namespace Editor.MainMenuCreator
         private void CreatePrefab()
         {
             string menuName = "MainMenuPrefab";
-            CreateObjectBase(Tags.mainMenuTag, gameName);
+            CreateObjectBase<MainMenuScript>(Tags.mainMenuTag, gameName);
             
             Transform buttonHolder = new GameObject("Buttons").transform;
             buttonHolder.SetParent(menuCanvas);
@@ -361,9 +362,9 @@ namespace Editor.MainMenuCreator
 
             CreatePrefab(menuName);
             
-            if (!GameObject.Find(Tags.creditsMenuTag) && requireCreditsMenu) GetWindow<CreditsMenuCreatorEditorWindow>("Credits Menu Creator").Show();
-            if (!GameObject.Find(Tags.settingsMenuTag) && requireSettingsMenu) GetWindow<SettingsMenuCreatorEditorWindow>("Settings Menu Creator").Show();
-            if (!GameObject.Find(Tags.loadGameMenuTag) && requireLoadMenu) GetWindow<LoadGameWindowEditorWindow>("Load Game Window Creator").Show();
+            if (!FindFirstObjectByType<CreditsMenuScript>(FindObjectsInactive.Include) && requireCreditsMenu) GetWindow<CreditsMenuCreatorEditorWindow>("Credits Menu Creator").Show();
+            if (!FindFirstObjectByType<SettingsMenuScript>(FindObjectsInactive.Include) && requireSettingsMenu) GetWindow<SettingsMenuCreatorEditorWindow>("Settings Menu Creator").Show();
+            if (!FindFirstObjectByType<LoadGameMenuScript>(FindObjectsInactive.Include) && requireLoadMenu) GetWindow<LoadGameWindowEditorWindow>("Load Game Window Creator").Show();
         }
     }
 }

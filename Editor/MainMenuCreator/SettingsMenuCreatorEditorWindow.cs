@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MainMenuLogic.MenuObjectDetectorScripts;
 using TMPro;
 using Types;
 using UnityEditor;
@@ -127,6 +128,7 @@ namespace Editor.MainMenuCreator
                         data.PlayerPrefsValue = EditorGUI.IntField(new Rect(rect.x + halfWidth, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Default Selection Index", (int)data.PlayerPrefsValue);
                         data.DropdownAmount = EditorGUI.IntField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Dropdown options amount", data.DropdownAmount);
                         data.PlayerPrefsValue = Mathf.Min((int)data.PlayerPrefsValue, data.DropdownAmount - 1);
+                        if ((int)data.PlayerPrefsValue < 0) data.PlayerPrefsValue = 0;
                         if (data.DropdownAmount > data.DropdownOptions.Count)
                         {
                             for (int i = data.DropdownOptions.Count; i < data.DropdownAmount; i++)
@@ -188,11 +190,15 @@ namespace Editor.MainMenuCreator
                         {
                             data.SliderBoundaries.x = EditorGUI.IntField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", (int)data.SliderBoundaries.x);
                             data.SliderBoundaries.y = EditorGUI.IntField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 3, halfWidth, EditorGUIUtility.singleLineHeight), "Upper bound", (int)data.SliderBoundaries.y);
+                            if ((int)data.PlayerPrefsValue < data.SliderBoundaries.x) data.PlayerPrefsValue = data.SliderBoundaries.x;
+                            else if ((int)data.PlayerPrefsValue > data.SliderBoundaries.y) data.PlayerPrefsValue = data.SliderBoundaries.y;
                         }
                         else if (data.PlayerPrefsDataType is Enums.PlayerPrefsDataTypes.Float)
                         {
                             data.SliderBoundaries.x = EditorGUI.FloatField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", data.SliderBoundaries.x);
                             data.SliderBoundaries.y = EditorGUI.FloatField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 3, halfWidth, EditorGUIUtility.singleLineHeight), "Upper bound", data.SliderBoundaries.y);
+                            if ((float)data.PlayerPrefsValue < data.SliderBoundaries.x) data.PlayerPrefsValue = data.SliderBoundaries.x;
+                            else if ((float)data.PlayerPrefsValue > data.SliderBoundaries.y) data.PlayerPrefsValue = data.SliderBoundaries.y;
                         }
                         else
                         {
@@ -276,7 +282,7 @@ namespace Editor.MainMenuCreator
             if (!checkmark) checkmark = (Sprite)AssetDatabase.LoadAssetAtPath(Consts.CheckmarkSpritePath, typeof(Sprite));
             if (!knob) knob = (Sprite)AssetDatabase.LoadAssetAtPath(Consts.KnobSpritePath, typeof(Sprite));
             string menuName = "SettingsMenuPrefab";
-            CreateObjectBase(Tags.settingsMenuTag, "Settings");
+            CreateObjectBase<SettingsMenuScript>(Tags.settingsMenuTag, "Settings");
             title.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
 
             float offset = 0f;
@@ -286,6 +292,9 @@ namespace Editor.MainMenuCreator
 
                 RectTransform con = new GameObject($"{control.ControlType} settings panel", typeof(RectTransform)).GetComponent<RectTransform>();
                 con.SetParent(menuCanvas);
+                
+                con.sizeDelta = buttonSize;
+                con.localPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y - offset);
 
                 switch (control.ControlType)
                 {
@@ -293,9 +302,6 @@ namespace Editor.MainMenuCreator
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Image>();
                         con.gameObject.AddComponent<Button>();
-                        con.sizeDelta = buttonSize;
-                        con.anchoredPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y - offset);
-                        offset += buttonSize.y + settingsOptionsSpacing;
                         TMP_Text buttonText = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
                         buttonTextRect.sizeDelta = con.sizeDelta;
@@ -333,28 +339,34 @@ namespace Editor.MainMenuCreator
                         RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
                         sHandle.SetParent(sHandleSlideArea);
-                        sHandle.GetComponent<Image>().sprite = knob;
+                        //sHandle.GetComponent<Image>().sprite = knob;
                         slider.handleRect = sHandle;
                         break;
                     case Enums.SettingsControlType.Toggle:
-                        con.gameObject.AddComponent<Toggle>().isOn = ((int)control.PlayerPrefsValue) == 1;
+                        Toggle t = con.gameObject.AddComponent<Toggle>();
+                        t.isOn = ((int)control.PlayerPrefsValue) == 1;
+                        con.localPosition = new Vector2(con.localPosition.x - 100f, con.localPosition.y);
+                        
                         RectTransform tBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        tBackground.SetParent(con);
+                        tBackground.localPosition = Vector2.zero;
+                        
                         RectTransform tCheckmark = new GameObject("Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         tCheckmark.SetParent(tBackground);
-                        tCheckmark.GetComponent<Image>().sprite = checkmark;
-                        tBackground.SetParent(con);
+                        Image tCheckmarkImage = tCheckmark.GetComponent<Image>();
+                        tCheckmarkImage.sprite = checkmark;
+                        t.graphic = tCheckmarkImage;
+                        
                         TMP_Text tLabel = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         tLabel.text = control.DisplayText;
                         tLabel.transform.SetParent(con);
-                        tLabel.rectTransform.anchoredPosition = new Vector2(150f, 0);
-                        con.sizeDelta = buttonSize;
-                        con.anchoredPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y - offset);
-                        offset += buttonSize.y + settingsOptionsSpacing;
+                        tLabel.rectTransform.localPosition = new Vector2(150f, 0);
                         break;
                     default:
                         Debug.LogWarning("Settings type not recognized - Instantiation");
                         break;
                 }
+                offset += buttonSize.y + settingsOptionsSpacing;
             }
             
             RectTransform button = CreateBackButton();

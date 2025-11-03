@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MainMenuLogic.MenuObjectDetectorScripts;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using Types;
 
@@ -9,27 +10,27 @@ namespace MainMenuLogic
     {
         private static MenuManager Instance;
 
-        private GameObject mainMenu;
-        private GameObject creditsMenu;
-        private GameObject settingsMenu;
-        private GameObject loadGameMenu;
+        private MainMenuScript mainMenu;
+        private CreditsMenuScript creditsMenu;
+        private SettingsMenuScript settingsMenu;
+        private LoadGameMenuScript loadGameMenu;
         
         private void Awake()
         {
             Instance = this;
-            if (!mainMenu) mainMenu = GameObject.Find(Tags.mainMenuTag);
-            if (!creditsMenu) creditsMenu = GameObject.Find(Tags.creditsMenuTag);
-            if (!settingsMenu) settingsMenu = GameObject.Find(Tags.settingsMenuTag);
-            if (!loadGameMenu) loadGameMenu = GameObject.Find(Tags.loadGameMenuTag);
+            if (!mainMenu) mainMenu = FindAnyObjectByType<MainMenuScript>();
+            if (!creditsMenu) creditsMenu = FindAnyObjectByType<CreditsMenuScript>();
+            if (!settingsMenu) settingsMenu = FindAnyObjectByType<SettingsMenuScript>();
+            if (!loadGameMenu) loadGameMenu = FindAnyObjectByType<LoadGameMenuScript>();
         }
 
         private void Update()
         {
             if (!Instance) Instance = this;
-            if (!mainMenu) mainMenu = GameObject.Find(Tags.mainMenuTag);
-            if (!creditsMenu) creditsMenu = GameObject.Find(Tags.creditsMenuTag);
-            if (!settingsMenu) settingsMenu = GameObject.Find(Tags.settingsMenuTag);
-            if (!loadGameMenu) loadGameMenu = GameObject.Find(Tags.loadGameMenuTag);
+            if (!mainMenu) mainMenu = FindAnyObjectByType<MainMenuScript>();
+            if (!creditsMenu) creditsMenu = FindAnyObjectByType<CreditsMenuScript>();
+            if (!settingsMenu) settingsMenu = FindAnyObjectByType<SettingsMenuScript>();
+            if (!loadGameMenu) loadGameMenu = FindAnyObjectByType<LoadGameMenuScript>();
         }
 
         private void OnDestroy()
@@ -37,6 +38,15 @@ namespace MainMenuLogic
             Instance = null;
         }
         
+        public static void BackButton()
+        {
+            Instance.mainMenu?.gameObject.SetActive(true);
+            Instance.creditsMenu?.gameObject.SetActive(false);
+            Instance.settingsMenu?.gameObject.SetActive(false);
+            Instance.loadGameMenu?.gameObject.SetActive(false);
+        }
+        
+        #region MainMenuFunctions
         public static void Play(int sceneIndex)
         {
             SceneManager.LoadScene(sceneIndex);
@@ -44,18 +54,18 @@ namespace MainMenuLogic
 
         public static void OpenSettings()
         {
-            Instance.mainMenu?.SetActive(false);
-            Instance.creditsMenu?.SetActive(false);
-            Instance.settingsMenu?.SetActive(true);
-            Instance.loadGameMenu?.SetActive(false);
+            Instance.mainMenu?.gameObject.SetActive(false);
+            Instance.creditsMenu?.gameObject.SetActive(false);
+            Instance.settingsMenu?.gameObject.SetActive(true);
+            Instance.loadGameMenu?.gameObject.SetActive(false);
         }
 
         public static void OpenCredits()
         {
-            Instance.mainMenu?.SetActive(false);
-            Instance.creditsMenu?.SetActive(true);
-            Instance.settingsMenu?.SetActive(false);
-            Instance.loadGameMenu?.SetActive(false);
+            Instance.mainMenu?.gameObject.SetActive(false);
+            Instance.creditsMenu?.gameObject.SetActive(true);
+            Instance.settingsMenu?.gameObject.SetActive(false);
+            Instance.loadGameMenu?.gameObject.SetActive(false);
         }
 
         public static void QuitGame()
@@ -65,18 +75,11 @@ namespace MainMenuLogic
 
         public static void OpenLoadMenu()
         {
-            Instance.mainMenu?.SetActive(false);
-            Instance.creditsMenu?.SetActive(false);
-            Instance.settingsMenu?.SetActive(false);
-            Instance.loadGameMenu?.SetActive(true);
+            Instance.mainMenu?.gameObject.SetActive(false);
+            Instance.creditsMenu?.gameObject.SetActive(false);
+            Instance.settingsMenu?.gameObject.SetActive(false);
+            Instance.loadGameMenu?.gameObject.SetActive(true);
         }
-
-        public static void BackButton()
-        {
-            Instance.mainMenu?.SetActive(true);
-            Instance.creditsMenu?.SetActive(false);
-            Instance.settingsMenu?.SetActive(false);
-            Instance.loadGameMenu?.SetActive(false);
-        }
+        #endregion
     }
 }

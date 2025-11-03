@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MainMenuLogic;
+using MainMenuLogic.MenuObjectDetectorScripts;
 using TMPro;
 using Types;
 using UnityEditor;
@@ -107,7 +108,7 @@ namespace Editor.MainMenuCreator
         private void CreatePrefab()
         {
             string menuName = "CreditsMenuPrefab";
-            CreateObjectBase(Tags.creditsMenuTag, "Credits");
+            CreateObjectBase<CreditsMenuScript>(Tags.creditsMenuTag, "Credits");
 
             title.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
 
