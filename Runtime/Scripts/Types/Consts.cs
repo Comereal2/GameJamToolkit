@@ -11,6 +11,11 @@
         /// This variable requires the use of <see cref="UnityEditor.AssetDatabase"/>.<see cref="UnityEditor.AssetDatabase.GetBuiltinExtraResource"/> to retrieve the sprite.
         /// </summary>
         public const string UnityUISpritesPath = "UI/Skin/";
+
+        /// <summary>
+        /// <inheritdoc cref="UnityUISpritesPath"/>
+        /// </summary>
+        public const string BackgroundSpritePath = UnityUISpritesPath + "Background.psd";
         
         /// <summary>
         /// <inheritdoc cref="UnityUISpritesPath"/>

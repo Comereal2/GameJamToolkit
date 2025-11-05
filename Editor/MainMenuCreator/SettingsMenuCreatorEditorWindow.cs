@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MainMenuLogic;
 using MainMenuLogic.MenuObjectDetectorScripts;
 using TMPro;
 using Types;
@@ -93,10 +94,11 @@ namespace Editor.MainMenuCreator
         private Vector2 defaultSettingsStartPos = new Vector2(0, 350f);
         private Vector2 buttonSize = new(300f, 100f);
 
+        private Sprite backgroundSprite;
         private Sprite checkmark;
         private Sprite knob;
         private Sprite uiSprite;
-
+        
         private void OnEnable()
         {
             settingsOptionsList = new ReorderableList(settingsControlTypes, typeof(BaseSettingsControlData), true, true, true, true);
@@ -280,6 +282,7 @@ namespace Editor.MainMenuCreator
 
         private void CreatePrefab()
         {
+            if (!backgroundSprite) backgroundSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.BackgroundSpritePath);
             if (!checkmark) checkmark = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.CheckmarkSpritePath);
             if (!knob) knob = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.KnobSpritePath);
             if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
@@ -316,6 +319,18 @@ namespace Editor.MainMenuCreator
                     case Enums.SettingsControlType.Dropdown:
                         break;
                     case Enums.SettingsControlType.InputField:
+                        con.gameObject.AddComponent<CanvasRenderer>();
+                        con.gameObject.AddComponent<Image>();
+                        con.gameObject.AddComponent<TMP_InputField>();
+
+                        RectTransform iTextArea = new GameObject("Text Area", typeof(RectTransform), typeof(RectMask2D)).GetComponent<RectTransform>();
+                        iTextArea.SetParent(con);
+
+                        RectTransform iPlaceholder = new GameObject("Placeholder", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI), typeof(LayoutElement)).GetComponent<RectTransform>();
+                        iPlaceholder.SetParent(iTextArea);
+
+                        RectTransform iText = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
+                        iText.SetParent(iTextArea);
                         break;
                     case Enums.SettingsControlType.Slider:
                         Slider slider = con.gameObject.AddComponent<Slider>();
@@ -330,6 +345,7 @@ namespace Editor.MainMenuCreator
                         
                         RectTransform sBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sBackground.SetParent(con);
+                        sBackground.GetComponent<Image>().sprite = backgroundSprite;
                         sBackground.anchorMin = new Vector2(0, 0.25f);
                         sBackground.anchorMax = new Vector2(1, 0.75f);
                         sBackground.anchoredPosition = Vector2.zero;
@@ -352,6 +368,8 @@ namespace Editor.MainMenuCreator
                         RectTransform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
                         sHandleSlideArea.anchoredPosition = Vector2.zero;
+                        sHandleSlideArea.anchorMin = Vector2.zero;
+                        sHandleSlideArea.anchorMax = new Vector2(1, 1);
                         
                         RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         Image sHandleImage = sHandle.GetComponent<Image>();
@@ -387,6 +405,7 @@ namespace Editor.MainMenuCreator
                         break;
                 }
                 offset += buttonSize.y + settingsOptionsSpacing;
+                MenuManager.AddSettingsOption(con.gameObject, control.PlayerPrefsKey, control.ControlType, control.PlayerPrefsDataType);
             }
             
             RectTransform button = CreateBackButton();
