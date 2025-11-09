@@ -40,25 +40,26 @@ namespace MainMenuLogic
         
         private void Awake()
         {
-            Instance = this;
-            if (!mainMenu) mainMenu = FindAnyObjectByType<MainMenuScript>();
-            if (!creditsMenu) creditsMenu = FindAnyObjectByType<CreditsMenuScript>();
-            if (!settingsMenu) settingsMenu = FindAnyObjectByType<SettingsMenuScript>();
-            if (!loadGameMenu) loadGameMenu = FindAnyObjectByType<LoadGameMenuScript>();
+            RevalidateInstances();
         }
 
         private void Update()
         {
-            if (!Instance) Instance = this;
-            if (!mainMenu) mainMenu = FindAnyObjectByType<MainMenuScript>();
-            if (!creditsMenu) creditsMenu = FindAnyObjectByType<CreditsMenuScript>();
-            if (!settingsMenu) settingsMenu = FindAnyObjectByType<SettingsMenuScript>();
-            if (!loadGameMenu) loadGameMenu = FindAnyObjectByType<LoadGameMenuScript>();
+            RevalidateInstances();
         }
 
         private void OnDestroy()
         {
             Instance = null;
+        }
+
+        public void RevalidateInstances()
+        {
+            if (!Instance) Instance = this;
+            if (!mainMenu) mainMenu = FindAnyObjectByType<MainMenuScript>(FindObjectsInactive.Include);
+            if (!creditsMenu) creditsMenu = FindAnyObjectByType<CreditsMenuScript>(FindObjectsInactive.Include);
+            if (!settingsMenu) settingsMenu = FindAnyObjectByType<SettingsMenuScript>(FindObjectsInactive.Include);
+            if (!loadGameMenu) loadGameMenu = FindAnyObjectByType<LoadGameMenuScript>(FindObjectsInactive.Include);
         }
         
         /// <summary>

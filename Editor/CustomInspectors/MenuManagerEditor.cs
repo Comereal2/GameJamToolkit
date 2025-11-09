@@ -19,6 +19,11 @@ namespace Editor.CustomInspectors
             
             base.OnInspectorGUI();
 
+            if (GUILayout.Button("Revalidate Menus"))
+            {
+                menu.RevalidateInstances();
+            }
+            
             if (menu.settingsMenu)
             {
                 if (removingPlayerPref)
