@@ -153,9 +153,9 @@ namespace Editor.MainMenuCreator
             RectTransform button = CreateBackButton();
             button.SetParent(menuCanvas);
             button.gameObject.SetActive(false);
-            button.anchoredPosition = new Vector2(0, -300f);
+            button.anchoredPosition = new Vector2(0, -400f);
             
-            scrollBehavior.scrollingEnd = offset - startingY;
+            scrollBehavior.scrollingEnd = offset - startingY - 300;
             scrollBehavior.backButton = button.gameObject;
             
             menuParent.gameObject.SetActive(false);

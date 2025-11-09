@@ -82,7 +82,6 @@ namespace Editor.MainMenuCreator
 #if !ENABLE_INPUT_SYSTEM
             eventSystem.gameObject.AddComponent<StandaloneInputModule>();
 #endif
-                eventSystem.SetParent(menuParent);
             }
             else eventSystem = FindAnyObjectByType<EventSystem>().transform;
             menuCanvas = new GameObject("Menu Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster)).transform;
@@ -180,13 +179,14 @@ namespace Editor.MainMenuCreator
         {
             RectTransform button = new GameObject("Back Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button)).GetComponent<RectTransform>();
             UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.BackButton);
+            button.sizeDelta = new Vector2(300f, 100f);
             TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
             RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
             buttonTextRect.sizeDelta = button.sizeDelta;
             buttonTextRect.anchoredPosition = Vector2.zero;
             buttonText.richText = true;
             buttonText.alignment = TextAlignmentOptions.Center;
-            buttonText.text = $"<size=24>Back</size>";
+            buttonText.text = $"<size=48>Back</size>";
             buttonText.color = Color.black;
             return button;
         }

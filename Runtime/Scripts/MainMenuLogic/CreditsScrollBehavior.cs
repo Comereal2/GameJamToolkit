@@ -32,13 +32,13 @@ namespace MainMenuLogic
 
         private IEnumerator WaitBeforeStartingScroll()
         {
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(2);
             scroll = true;
         }
 
         private IEnumerator WaitBeforeShowingBackButton()
         {
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(1);
             if(backButton) backButton.SetActive(true);
         }
     }
