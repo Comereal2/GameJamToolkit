@@ -6,7 +6,7 @@
 ## Installation
 1. Open Unity's Package Manager
 2. Click Install package from git url
-3. Paste in: ```https://github.com/Comereal2/GameJamToolkit```
+3. Paste in: ```https://github.com/Comereal2/GameJamToolkit.git```
 
 ## Usage
 This package contains different tools used to swiftly create things, for which you usually dont have time during a game jam such as:
