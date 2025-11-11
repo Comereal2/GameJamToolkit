@@ -5,7 +5,7 @@ using Attributes;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
+/*
 namespace SaveSystem
 {
     public class SaveManager : ScriptableObject
@@ -70,4 +70,4 @@ namespace SaveSystem
             }
         }
     }
-}
+}*/
