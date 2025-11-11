@@ -6,7 +6,9 @@
         "Unity.InputSystem",
         "Comereal.RuntimeAssembly"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
