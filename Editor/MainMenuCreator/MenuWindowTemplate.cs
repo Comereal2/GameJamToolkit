@@ -107,6 +107,11 @@ namespace Editor.MainMenuCreator
         {
             if (!TryGetSelectedFolderPath(out string path)) return;
             path += $"/{menuName}.prefab";
+
+            foreach (var t in menuParent.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = 5;
+            }
             
             PrefabUtility.SaveAsPrefabAssetAndConnect(menuParent.gameObject, path, InteractionMode.AutomatedAction);
             if (!keepOnScene) DestroyImmediate(menuParent.gameObject);

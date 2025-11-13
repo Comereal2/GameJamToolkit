@@ -90,7 +90,7 @@ namespace Editor.MainMenuCreator
         private List<BaseSettingsControlData> settingsControlTypes = new();
         private float entrySpacing = 5f;
 
-        private float settingsOptionsSpacing = 15f;
+        private float settingsOptionsSpacing = 25;
         private Vector2 defaultSettingsStartPos = new Vector2(0, 350f);
         private Vector2 buttonSize = new(300f, 100f);
 
@@ -320,21 +320,36 @@ namespace Editor.MainMenuCreator
                         buttonText.color = Color.black;
                         break;
                     case Enums.SettingsControlType.Dropdown:
+                        float settingScale = 1.875f;
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Image>().sprite = uiSprite;
+                        con.sizeDelta = new Vector2(160, 30) * settingScale;
                         TMP_Dropdown dDropdown = con.gameObject.AddComponent<TMP_Dropdown>();
 
                         RectTransform dLabel = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
                         dLabel.SetParent(con);
                         dDropdown.captionText = dLabel.GetComponent<TMP_Text>();
+                        dLabel.anchorMin = Vector2.zero;
+                        dLabel.anchorMax = new Vector2(1, 1);
+                        dLabel.anchoredPosition = new Vector2(10, 7) * settingScale;
+                        dLabel.sizeDelta = new Vector2(25, 6) * settingScale;
 
                         RectTransform dArrow = new GameObject("Arrow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         dArrow.SetParent(con);
                         dArrow.GetComponent<Image>().sprite = dropdownArrow;
+                        dArrow.anchorMin = new Vector2(1, 0.5f);
+                        dArrow.anchorMax = new Vector2(1, 0.5f);
+                        dArrow.anchoredPosition = new Vector2(-15, 0) * settingScale;
+                        dArrow.sizeDelta = new Vector2(20, 20) * settingScale;
 
                         RectTransform dTemplate = new GameObject("Template", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(ScrollRect)).GetComponent<RectTransform>();
                         dTemplate.SetParent(con);
+                        dTemplate.gameObject.SetActive(false);
                         dTemplate.GetComponent<Image>().sprite = uiSprite;
+                        dTemplate.anchorMin = Vector2.zero;
+                        dTemplate.anchorMax = new Vector2(1, 0.5f);
+                        dArrow.anchoredPosition = new Vector2(0, 2) * settingScale;
+                        dArrow.sizeDelta = new Vector2(0, 150) * settingScale;
                         
                         break;
                     case Enums.SettingsControlType.InputField:
@@ -386,9 +401,9 @@ namespace Editor.MainMenuCreator
                         
                         RectTransform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
-                        sHandleSlideArea.anchoredPosition = Vector2.zero;
                         sHandleSlideArea.anchorMin = Vector2.zero;
                         sHandleSlideArea.anchorMax = new Vector2(1, 1);
+                        sHandleSlideArea.anchoredPosition = Vector2.zero;
                         
                         RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         Image sHandleImage = sHandle.GetComponent<Image>();
