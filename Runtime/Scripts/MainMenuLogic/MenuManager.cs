@@ -270,6 +270,9 @@ namespace MainMenuLogic
         public static void ClearPlayerPrefs()
         {
             PlayerPrefs.DeleteAll();
+            Instance.floatPlayerPrefs.Clear();
+            Instance.intPlayerPrefs.Clear();
+            Instance.stringPlayerPrefs.Clear();
         }
 
         #endregion

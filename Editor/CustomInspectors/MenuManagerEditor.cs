@@ -24,7 +24,7 @@ namespace Editor.CustomInspectors
                 menu.RevalidateInstances();
             }
             
-            if (menu.settingsMenu)
+            if (menu.settingsMenu || menu.GetAllKeys().Count > 0)
             {
                 if (removingPlayerPref)
                 {
@@ -45,7 +45,7 @@ namespace Editor.CustomInspectors
                 }
                 else
                 {
-                    if(GUILayout.Button("Clear Player Prefs")) PlayerPrefs.DeleteAll();
+                    if(GUILayout.Button("Clear Player Prefs")) MenuManager.ClearPlayerPrefs();
                     if (GUILayout.Button("Remove Player Pref")) removingPlayerPref = true;
                 }
             }

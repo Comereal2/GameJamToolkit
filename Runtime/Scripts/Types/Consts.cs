@@ -31,5 +31,10 @@
         /// <inheritdoc cref="UnityUISpritesPath"/>
         /// </summary>
         public const string UISpriteSpritePath = UnityUISpritesPath + "UISprite.psd";
+
+        /// <summary>
+        /// <inheritdoc cref="UnityUISpritesPath"/>
+        /// </summary>
+        public const string DropdownArrowSpritePath = UnityUISpritesPath + "DropdownArrow.psd";
     }
 }

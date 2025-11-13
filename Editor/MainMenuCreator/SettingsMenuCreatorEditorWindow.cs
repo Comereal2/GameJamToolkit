@@ -96,6 +96,7 @@ namespace Editor.MainMenuCreator
 
         private Sprite backgroundSprite;
         private Sprite checkmark;
+        private Sprite dropdownArrow;
         private Sprite knob;
         private Sprite uiSprite;
         
@@ -286,6 +287,8 @@ namespace Editor.MainMenuCreator
             if (!checkmark) checkmark = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.CheckmarkSpritePath);
             if (!knob) knob = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.KnobSpritePath);
             if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
+            if (!dropdownArrow) dropdownArrow = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.DropdownArrowSpritePath);
+            
             string menuName = "SettingsMenuPrefab";
             CreateObjectBase<SettingsMenuScript>(Tags.settingsMenuTag, "Settings");
             title.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Center;
@@ -317,6 +320,22 @@ namespace Editor.MainMenuCreator
                         buttonText.color = Color.black;
                         break;
                     case Enums.SettingsControlType.Dropdown:
+                        con.gameObject.AddComponent<CanvasRenderer>();
+                        con.gameObject.AddComponent<Image>().sprite = uiSprite;
+                        TMP_Dropdown dDropdown = con.gameObject.AddComponent<TMP_Dropdown>();
+
+                        RectTransform dLabel = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
+                        dLabel.SetParent(con);
+                        dDropdown.captionText = dLabel.GetComponent<TMP_Text>();
+
+                        RectTransform dArrow = new GameObject("Arrow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        dArrow.SetParent(con);
+                        dArrow.GetComponent<Image>().sprite = dropdownArrow;
+
+                        RectTransform dTemplate = new GameObject("Template", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(ScrollRect)).GetComponent<RectTransform>();
+                        dTemplate.SetParent(con);
+                        dTemplate.GetComponent<Image>().sprite = uiSprite;
+                        
                         break;
                     case Enums.SettingsControlType.InputField:
                         con.gameObject.AddComponent<CanvasRenderer>();
