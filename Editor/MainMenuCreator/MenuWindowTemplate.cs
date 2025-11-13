@@ -160,6 +160,8 @@ namespace Editor.MainMenuCreator
             }
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndHorizontal();
+
+            ImportTMPIfMissing();
         }
 
         protected void SetTextProperties(string text, TextData data, TMP_Text textComp)
@@ -194,6 +196,11 @@ namespace Editor.MainMenuCreator
             buttonText.text = $"<size=48>Back</size>";
             buttonText.color = Color.black;
             return button;
+        }
+
+        protected void ImportTMPIfMissing()
+        {
+            Destroy(new GameObject("Checker", typeof(TMP_Text)));
         }
 
         private void CreateBackground()
