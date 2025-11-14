@@ -334,15 +334,15 @@ namespace Editor.MainMenuCreator
                         dLabel.SetParent(con);
                         dDropdown.captionText = dLabel.GetComponent<TMP_Text>();
                         dLabel.anchorMin = Vector2.zero;
-                        dLabel.anchorMax = new Vector2(1, 1);
+                        dLabel.anchorMax = Consts.Anchor_MaxMax;
                         dLabel.anchoredPosition = new Vector2(10, 7);
                         dLabel.sizeDelta = new Vector2(25, 6);
 
                         RectTransform dArrow = new GameObject("Arrow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         dArrow.SetParent(con);
                         dArrow.GetComponent<Image>().sprite = dropdownArrow;
-                        dArrow.anchorMin = new Vector2(1, 0.5f);
-                        dArrow.anchorMax = new Vector2(1, 0.5f);
+                        dArrow.anchorMin = Consts.Anchor_MaxHalf;
+                        dArrow.anchorMax = Consts.Anchor_MaxHalf;
                         dArrow.anchoredPosition = new Vector2(-15, 0);
                         dArrow.sizeDelta = new Vector2(20, 20);
 
@@ -351,7 +351,7 @@ namespace Editor.MainMenuCreator
                         dTemplate.gameObject.SetActive(false);
                         dTemplate.GetComponent<Image>().sprite = uiSprite;
                         dTemplate.anchorMin = Vector2.zero;
-                        dTemplate.anchorMax = new Vector2(1, 0.5f);
+                        dTemplate.anchorMax = Consts.Anchor_MaxHalf;
                         dArrow.anchoredPosition = new Vector2(0, 2);
                         dArrow.sizeDelta = new Vector2(0, 150);
                         
@@ -392,15 +392,15 @@ namespace Editor.MainMenuCreator
                         RectTransform sBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sBackground.SetParent(con);
                         sBackground.GetComponent<Image>().sprite = backgroundSprite;
-                        sBackground.anchorMin = new Vector2(0, 0.25f);
-                        sBackground.anchorMax = new Vector2(1, 0.75f);
+                        sBackground.anchorMin = Consts.Anchor_ZeroQuarter;
+                        sBackground.anchorMax = Consts.Anchor_MaxThreeQuarters;
                         sBackground.anchoredPosition = Vector2.zero;
                         sBackground.sizeDelta = Vector2.zero;
                         
                         RectTransform sFillArea = new GameObject("Fill Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sFillArea.SetParent(con);
-                        sFillArea.anchorMin = new Vector2(0, 0.25f);
-                        sFillArea.anchorMax = new Vector2(1, 0.75f);
+                        sFillArea.anchorMin = Consts.Anchor_ZeroQuarter;
+                        sFillArea.anchorMax = Consts.Anchor_MaxThreeQuarters;
                         sFillArea.anchoredPosition = Vector2.zero;
                         
                         RectTransform sFill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
@@ -414,7 +414,7 @@ namespace Editor.MainMenuCreator
                         RectTransform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
                         sHandleSlideArea.anchorMin = Vector2.zero;
-                        sHandleSlideArea.anchorMax = new Vector2(1, 1);
+                        sHandleSlideArea.anchorMax = Consts.Anchor_MaxMax;
                         sHandleSlideArea.anchoredPosition = Vector2.zero;
                         
                         RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();

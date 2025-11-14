@@ -48,7 +48,9 @@ namespace Types
         public const float PropWidth = 300f;
         
         #region Vectors
-        
+
+        #region ObjectSize
+
         public static Vector2 ButtonSize { get; } = new(160f, 30f);
         public static Vector2 DropdownSize => ButtonSize;
         public static Vector2 InputFieldSize => ButtonSize;
@@ -60,6 +62,20 @@ namespace Types
         public static Vector2 InputFieldScale { get; } = new(PropWidth / InputFieldSize.x, PropWidth / InputFieldSize.x);
         public static Vector2 ToggleScale { get; } = new(PropWidth / ToggleSize.x, PropWidth / ToggleSize.x);
         public static Vector2 SliderScale { get; } = new(PropWidth / SliderSize.x, PropWidth / SliderSize.x);
+
+        #endregion
+
+        #region Anchors
+
+        //These Anchors are the only ones currently used by the script.
+        
+        public static Vector2 Anchor_ZeroQuarter = new(0, 0.25f);
+        
+        public static Vector2 Anchor_MaxHalf = new(1, 0.5f);
+        public static Vector2 Anchor_MaxThreeQuarters = new(1, 0.75f);
+        public static Vector2 Anchor_MaxMax = new(1, 1);
+
+        #endregion
 
         #endregion
 
