@@ -47,6 +47,7 @@ namespace Editor.MainMenuCreator
         private static Material sdf_outlineMat;
         
         private static Sprite backgroundSprite;
+        private static Sprite uiMask;
         private static Sprite uiSprite;
         
         protected float spacing = 15f;
@@ -75,6 +76,7 @@ namespace Editor.MainMenuCreator
             if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
             
             if (!backgroundSprite) backgroundSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.BackgroundSpritePath);
+            if (!uiMask) uiMask = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UIMaskSpritePath);
             if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
             
             if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
@@ -199,7 +201,7 @@ namespace Editor.MainMenuCreator
             button.sizeDelta = Consts.ButtonSize;
             button.localScale = Consts.ButtonScale;
 
-            SetupSlicedSprite(button.GetComponent<Image>(), uiSprite);
+            SetupSlicedSprite(button.GetComponent<Image>(), Enums.SlicedSprite.UISprite);
             
             TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
             RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
@@ -213,15 +215,17 @@ namespace Editor.MainMenuCreator
             return button;
         }
         
-        private void SetupSlicedSprite(Image image, Sprite sprite)
+        protected void SetupSlicedSprite(Image image, Enums.SlicedSprite sprite)
         {
-            image.sprite = sprite;
+            image.sprite = sprite switch
+            {
+                Enums.SlicedSprite.Background => backgroundSprite,
+                Enums.SlicedSprite.UIMask => uiMask,
+                Enums.SlicedSprite.UISprite => uiSprite,
+                _ => image.sprite
+            };
             image.type = Image.Type.Sliced;
         }
-
-        protected void SetupUISprite(Image image) => SetupSlicedSprite(image, uiSprite);
-
-        protected void SetupBackgroundSprite(Image image) => SetupSlicedSprite(image, backgroundSprite);
 
         protected void ImportTMPIfMissing()
         {

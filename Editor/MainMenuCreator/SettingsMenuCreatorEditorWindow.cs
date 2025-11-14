@@ -304,7 +304,7 @@ namespace Editor.MainMenuCreator
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Button>();
                         
-                        SetupUISprite(con.gameObject.AddComponent<Image>());
+                        SetupSlicedSprite(con.gameObject.AddComponent<Image>(), Enums.SlicedSprite.UISprite);
                         
                         TMP_Text buttonText = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
@@ -323,9 +323,10 @@ namespace Editor.MainMenuCreator
                     case Enums.SettingsControlType.Dropdown:
                         con.gameObject.AddComponent<CanvasRenderer>();
                         
-                        SetupUISprite(con.gameObject.AddComponent<Image>());
+                        SetupSlicedSprite(con.gameObject.AddComponent<Image>(), Enums.SlicedSprite.UISprite);
                         
                         TMP_Dropdown dDropdown = con.gameObject.AddComponent<TMP_Dropdown>();
+                        dDropdown.AddOptions(control.DropdownOptions);
 
                         RectTransform dLabel = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
                         dLabel.SetParent(con);
@@ -345,14 +346,74 @@ namespace Editor.MainMenuCreator
 
                         RectTransform dTemplate = new GameObject("Template", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(ScrollRect)).GetComponent<RectTransform>();
                         dTemplate.SetParent(con);
+                        SetupSlicedSprite(dTemplate.GetComponent<Image>(), Enums.SlicedSprite.UISprite);
                         dTemplate.gameObject.SetActive(false);
-                        
-                        SetupUISprite(dTemplate.GetComponent<Image>());
-                        
+                        dDropdown.template = dTemplate;
                         dTemplate.anchorMin = Vector2.zero;
                         dTemplate.anchorMax = Consts.Anchor_MaxHalf;
-                        dArrow.anchoredPosition = new Vector2(0, 2);
-                        dArrow.sizeDelta = new Vector2(0, 150);
+                        dTemplate.anchoredPosition = new Vector2(0, 2);
+                        dTemplate.sizeDelta = new Vector2(0, 150);
+                        ScrollRect dTemplateScrollRect = dTemplate.GetComponent<ScrollRect>();
+
+                        RectTransform dViewport = new GameObject("Viewport", typeof(RectTransform), typeof(Mask), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        dViewport.SetParent(dTemplate);
+                        SetupSlicedSprite(dViewport.GetComponent<Image>(), Enums.SlicedSprite.UIMask);
+                        dViewport.anchorMin = Vector2.zero;
+                        dViewport.anchorMax = Consts.Anchor_MaxMax;
+                        dTemplateScrollRect.viewport = dViewport;
+
+                        RectTransform dContent = new GameObject("Content", typeof(RectTransform)).GetComponent<RectTransform>();
+                        dContent.SetParent(dViewport);
+                        dContent.anchorMin = Vector2.up;
+                        dContent.anchorMax = Consts.Anchor_MaxMax;
+                        dTemplateScrollRect.content = dContent;
+
+                        RectTransform dItem = new GameObject("Item", typeof(RectTransform), typeof(Toggle)).GetComponent<RectTransform>();
+                        dItem.SetParent(dContent);
+                        dItem.anchorMin = Consts.Anchor_ZeroHalf;
+                        dItem.anchorMax = Consts.Anchor_MaxHalf;
+                        Toggle dItemToggle = dItem.GetComponent<Toggle>();
+                        dItemToggle.isOn = true;
+
+                        RectTransform dItemBackground = new GameObject("Item Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        dItemBackground.SetParent(dItem);
+                        dItemToggle.targetGraphic = dItemBackground.GetComponent<Image>();
+                        dItemBackground.anchorMin = Vector2.zero;
+                        dItemBackground.anchorMax = Consts.Anchor_MaxMax;
+
+                        RectTransform dItemCheckmark = new GameObject("Item Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        dItemCheckmark.SetParent(dItem);
+                        dItemToggle.graphic = dItemCheckmark.GetComponent<Image>();
+                        dItemCheckmark.GetComponent<Image>().sprite = checkmark;
+                        dItemCheckmark.anchorMin = Consts.Anchor_ZeroHalf;
+                        dItemCheckmark.anchorMax = Consts.Anchor_ZeroHalf;
+
+                        RectTransform dItemLabel = new GameObject("Item Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
+                        dItemLabel.SetParent(dItem);
+                        dItemLabel.anchorMin = Vector2.zero;
+                        dItemLabel.anchorMax = Consts.Anchor_MaxMax;
+                        dDropdown.itemText = dItemLabel.GetComponent<TMP_Text>();
+
+                        RectTransform dScrollbar = new GameObject("Scrollbar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Scrollbar)).GetComponent<RectTransform>();
+                        dScrollbar.SetParent(dTemplate);
+                        dScrollbar.anchorMin = Vector2.right;
+                        dScrollbar.anchorMax = Consts.Anchor_MaxMax;
+                        SetupSlicedSprite(dScrollbar.GetComponent<Image>(), Enums.SlicedSprite.Background);
+                        Scrollbar dScrollbarScrollbar = dScrollbar.GetComponent<Scrollbar>();
+                        dTemplateScrollRect.verticalScrollbar = dScrollbarScrollbar;
+
+                        RectTransform dSlidingArea = new GameObject("Sliding Area", typeof(RectTransform)).GetComponent<RectTransform>();
+                        dSlidingArea.SetParent(dScrollbar);
+                        dSlidingArea.anchorMin = Vector2.zero;
+                        dSlidingArea.anchorMax = Consts.Anchor_MaxMax;
+
+                        RectTransform dHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
+                        dHandle.SetParent(dScrollbar);
+                        dHandle.anchorMin = Vector2.zero;
+                        dHandle.anchorMax = new Vector2(1, 0.2f);
+                        SetupSlicedSprite(dHandle.GetComponent<Image>(), Enums.SlicedSprite.UISprite);
+                        dScrollbarScrollbar.handleRect = dHandle;
+                        dScrollbarScrollbar.targetGraphic = dHandle.GetComponent<Image>();
                         
                         con.sizeDelta = Consts.DropdownSize;
                         con.localScale = Consts.DropdownScale;
@@ -383,7 +444,7 @@ namespace Editor.MainMenuCreator
                         
                         RectTransform sBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sBackground.SetParent(con);
-                        SetupBackgroundSprite(sBackground.GetComponent<Image>());
+                        SetupSlicedSprite(sBackground.GetComponent<Image>(), Enums.SlicedSprite.Background);
                         sBackground.anchorMin = Consts.Anchor_ZeroQuarter;
                         sBackground.anchorMax = Consts.Anchor_MaxThreeQuarters;
                         sBackground.anchoredPosition = Vector2.zero;
@@ -398,7 +459,7 @@ namespace Editor.MainMenuCreator
                         
                         RectTransform sFill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sFill.SetParent(sFillArea);
-                        SetupUISprite(sFill.GetComponent<Image>());
+                        SetupSlicedSprite(sFill.GetComponent<Image>(), Enums.SlicedSprite.UISprite);
                         sFill.anchorMin = Vector2.zero;
                         sFill.anchorMax = Vector2.up;
                         sFill.offsetMin = Vector2.zero;

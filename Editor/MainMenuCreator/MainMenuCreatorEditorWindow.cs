@@ -265,7 +265,7 @@ namespace Editor.MainMenuCreator
                     if (buttonProperties[i].isSolidColor)
                     {
                         button.GetComponent<Image>().color = buttonProperties[i].buttonColor;
-                        SetupUISprite(button.GetComponent<Image>());
+                        SetupSlicedSprite(button.GetComponent<Image>(), Enums.SlicedSprite.UISprite);
                     }
                     else
                     {
@@ -285,7 +285,7 @@ namespace Editor.MainMenuCreator
                     if (combinedButtonProperties.isSolidColor)
                     {
                         button.GetComponent<Image>().color = combinedButtonProperties.buttonColor;
-                        SetupUISprite(button.GetComponent<Image>());
+                        SetupSlicedSprite(button.GetComponent<Image>(), Enums.SlicedSprite.UISprite);
                     }
                     else
                     {

@@ -30,5 +30,12 @@
             Float,
             String
         }
+
+        public enum SlicedSprite
+        {
+            Background,
+            UIMask,
+            UISprite
+        }
     }
 }

@@ -29,17 +29,22 @@ namespace Types
         /// <summary>
         /// <inheritdoc cref="UnityUISpritesPath"/>
         /// </summary>
+        public const string DropdownArrowSpritePath = UnityUISpritesPath + "DropdownArrow.psd";
+        
+        /// <summary>
+        /// <inheritdoc cref="UnityUISpritesPath"/>
+        /// </summary>
         public const string KnobSpritePath = UnityUISpritesPath + "Knob.psd";
 
         /// <summary>
         /// <inheritdoc cref="UnityUISpritesPath"/>
         /// </summary>
-        public const string UISpriteSpritePath = UnityUISpritesPath + "UISprite.psd";
-
+        public const string UIMaskSpritePath = UnityUISpritesPath + "UIMask.psd";
+        
         /// <summary>
         /// <inheritdoc cref="UnityUISpritesPath"/>
         /// </summary>
-        public const string DropdownArrowSpritePath = UnityUISpritesPath + "DropdownArrow.psd";
+        public const string UISpriteSpritePath = UnityUISpritesPath + "UISprite.psd";
         
         #endregion
 
@@ -70,6 +75,7 @@ namespace Types
         //These Anchors are the only ones currently used by the script.
         
         public static Vector2 Anchor_ZeroQuarter = new(0, 0.25f);
+        public static Vector2 Anchor_ZeroHalf = new(0, 0.5f);
         
         public static Vector2 Anchor_MaxHalf = new(1, 0.5f);
         public static Vector2 Anchor_MaxThreeQuarters = new(1, 0.75f);
