@@ -47,6 +47,7 @@ namespace Editor.MainMenuCreator
         private Material sdf_outlineMat;
         
         protected float spacing = 15f;
+        protected Sprite uiSprite;
 
         private TextData titleData = new(textColor: Color.white, textOutlineColor: Color.black);
         
@@ -68,6 +69,8 @@ namespace Editor.MainMenuCreator
 
         protected void CreateObjectBase<T>(string menuTag, string titleText) where T : MonoBehaviour
         {
+            if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
+            
             if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
             if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
             
@@ -190,6 +193,9 @@ namespace Editor.MainMenuCreator
             UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.BackButton);
             button.sizeDelta = Consts.ButtonSize;
             button.localScale = Consts.ButtonScale;
+
+            SetupSlicedSprite(button.GetComponent<Image>(), uiSprite);
+            
             TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
             RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
             buttonTextRect.sizeDelta = button.sizeDelta;
@@ -198,7 +204,14 @@ namespace Editor.MainMenuCreator
             buttonText.alignment = TextAlignmentOptions.Center;
             buttonText.text = $"<size=24>Back</size>";
             buttonText.color = Color.black;
+            
             return button;
+        }
+        
+        protected void SetupSlicedSprite(Image image, Sprite sprite)
+        {
+            image.sprite = sprite;
+            image.type = Image.Type.Sliced;
         }
 
         protected void ImportTMPIfMissing()

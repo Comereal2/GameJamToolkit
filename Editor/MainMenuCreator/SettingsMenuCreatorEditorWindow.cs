@@ -97,7 +97,6 @@ namespace Editor.MainMenuCreator
         private Sprite checkmark;
         private Sprite dropdownArrow;
         private Sprite knob;
-        private Sprite uiSprite;
         
         private void OnEnable()
         {
@@ -285,7 +284,6 @@ namespace Editor.MainMenuCreator
             if (!backgroundSprite) backgroundSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.BackgroundSpritePath);
             if (!checkmark) checkmark = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.CheckmarkSpritePath);
             if (!knob) knob = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.KnobSpritePath);
-            if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
             if (!dropdownArrow) dropdownArrow = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.DropdownArrowSpritePath);
             
             string menuName = "SettingsMenuPrefab";
@@ -310,8 +308,10 @@ namespace Editor.MainMenuCreator
                         offset += Consts.ButtonSize.y * Consts.ButtonScale.y;
                         
                         con.gameObject.AddComponent<CanvasRenderer>();
-                        con.gameObject.AddComponent<Image>();
                         con.gameObject.AddComponent<Button>();
+                        
+                        SetupSlicedSprite(con.gameObject.AddComponent<Image>(), uiSprite);
+                        
                         TMP_Text buttonText = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
                         buttonTextRect.sizeDelta = con.sizeDelta;
@@ -327,7 +327,9 @@ namespace Editor.MainMenuCreator
                         offset += Consts.DropdownSize.y * Consts.DropdownScale.y;
                         
                         con.gameObject.AddComponent<CanvasRenderer>();
-                        con.gameObject.AddComponent<Image>().sprite = uiSprite;
+                        
+                        SetupSlicedSprite(con.gameObject.AddComponent<Image>(), uiSprite);
+                        
                         TMP_Dropdown dDropdown = con.gameObject.AddComponent<TMP_Dropdown>();
 
                         RectTransform dLabel = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
@@ -349,7 +351,9 @@ namespace Editor.MainMenuCreator
                         RectTransform dTemplate = new GameObject("Template", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(ScrollRect)).GetComponent<RectTransform>();
                         dTemplate.SetParent(con);
                         dTemplate.gameObject.SetActive(false);
-                        dTemplate.GetComponent<Image>().sprite = uiSprite;
+                        
+                        SetupSlicedSprite(dTemplate.GetComponent<Image>(), uiSprite);
+                        
                         dTemplate.anchorMin = Vector2.zero;
                         dTemplate.anchorMax = Consts.Anchor_MaxHalf;
                         dArrow.anchoredPosition = new Vector2(0, 2);
@@ -409,7 +413,8 @@ namespace Editor.MainMenuCreator
                         sFill.anchorMin = Vector2.zero;
                         sFill.anchorMax = Vector2.up;
                         sFill.anchoredPosition = Vector2.zero;
-                        sFill.GetComponent<Image>().sprite = uiSprite;
+                        
+                        SetupSlicedSprite(sFill.GetComponent<Image>(), uiSprite);
                         
                         RectTransform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
@@ -451,6 +456,7 @@ namespace Editor.MainMenuCreator
                         tLabel.transform.SetParent(con);
                         tLabel.rectTransform.localPosition = new Vector2(100f, 0);
                         break;
+                    case Enums.SettingsControlType.None:
                     default:
                         Debug.LogWarning("Settings type not recognized - Instantiation");
                         break;
