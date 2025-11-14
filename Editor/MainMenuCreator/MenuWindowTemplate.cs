@@ -64,6 +64,8 @@ namespace Editor.MainMenuCreator
         protected Transform menuCanvas;
         protected Transform title;
 
+        private static bool hasCheckedTMP = false;
+
         protected void CreateObjectBase<T>(string menuTag, string titleText) where T : MonoBehaviour
         {
             if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
@@ -186,21 +188,24 @@ namespace Editor.MainMenuCreator
         {
             RectTransform button = new GameObject("Back Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button)).GetComponent<RectTransform>();
             UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.BackButton);
-            button.sizeDelta = new Vector2(300f, 100f);
+            button.sizeDelta = Consts.ButtonSize;
+            button.localScale = Consts.ButtonScale;
             TMP_Text buttonText = Instantiate(title.gameObject, button.transform).GetComponent<TMP_Text>();
             RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
             buttonTextRect.sizeDelta = button.sizeDelta;
             buttonTextRect.anchoredPosition = Vector2.zero;
             buttonText.richText = true;
             buttonText.alignment = TextAlignmentOptions.Center;
-            buttonText.text = $"<size=48>Back</size>";
+            buttonText.text = $"<size=24>Back</size>";
             buttonText.color = Color.black;
             return button;
         }
 
         protected void ImportTMPIfMissing()
         {
-            Destroy(new GameObject("Checker", typeof(TMP_Text)));
+            if (hasCheckedTMP) return;
+            hasCheckedTMP = true;
+            DestroyImmediate(new GameObject("Checker", typeof(TextMeshProUGUI)));
         }
 
         private void CreateBackground()

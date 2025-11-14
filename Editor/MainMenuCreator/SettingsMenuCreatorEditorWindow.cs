@@ -89,11 +89,10 @@ namespace Editor.MainMenuCreator
 
         private List<BaseSettingsControlData> settingsControlTypes = new();
         private float entrySpacing = 5f;
-
+        
         private float settingsOptionsSpacing = 25;
-        private Vector2 defaultSettingsStartPos = new Vector2(0, 350f);
-        private Vector2 buttonSize = new(300f, 100f);
-
+        private static Vector2 defaultSettingsStartPos = new(0, 350f);
+        
         private Sprite backgroundSprite;
         private Sprite checkmark;
         private Sprite dropdownArrow;
@@ -301,12 +300,15 @@ namespace Editor.MainMenuCreator
                 RectTransform con = new GameObject($"{control.ControlType} settings panel", typeof(RectTransform)).GetComponent<RectTransform>();
                 con.SetParent(menuCanvas);
                 
-                con.sizeDelta = buttonSize;
                 con.localPosition = new Vector2(defaultSettingsStartPos.x, defaultSettingsStartPos.y - offset);
 
                 switch (control.ControlType)
                 {
                     case Enums.SettingsControlType.Button:
+                        con.sizeDelta = Consts.ButtonSize;
+                        con.localScale = Consts.ButtonScale;
+                        offset += Consts.ButtonSize.y * Consts.ButtonScale.y;
+                        
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Image>();
                         con.gameObject.AddComponent<Button>();
@@ -316,14 +318,16 @@ namespace Editor.MainMenuCreator
                         buttonTextRect.anchoredPosition = Vector2.zero;
                         buttonText.richText = true;
                         buttonText.alignment = TextAlignmentOptions.Center;
-                        buttonText.text = $"<size=36>{control.DisplayText}</size>";
+                        buttonText.text = $"<size=24>{control.DisplayText}</size>";
                         buttonText.color = Color.black;
                         break;
                     case Enums.SettingsControlType.Dropdown:
-                        float settingScale = 1.875f;
+                        con.sizeDelta = Consts.DropdownSize;
+                        con.localScale = Consts.DropdownScale;
+                        offset += Consts.DropdownSize.y * Consts.DropdownScale.y;
+                        
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Image>().sprite = uiSprite;
-                        con.sizeDelta = new Vector2(160, 30) * settingScale;
                         TMP_Dropdown dDropdown = con.gameObject.AddComponent<TMP_Dropdown>();
 
                         RectTransform dLabel = new GameObject("Label", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
@@ -331,16 +335,16 @@ namespace Editor.MainMenuCreator
                         dDropdown.captionText = dLabel.GetComponent<TMP_Text>();
                         dLabel.anchorMin = Vector2.zero;
                         dLabel.anchorMax = new Vector2(1, 1);
-                        dLabel.anchoredPosition = new Vector2(10, 7) * settingScale;
-                        dLabel.sizeDelta = new Vector2(25, 6) * settingScale;
+                        dLabel.anchoredPosition = new Vector2(10, 7);
+                        dLabel.sizeDelta = new Vector2(25, 6);
 
                         RectTransform dArrow = new GameObject("Arrow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         dArrow.SetParent(con);
                         dArrow.GetComponent<Image>().sprite = dropdownArrow;
                         dArrow.anchorMin = new Vector2(1, 0.5f);
                         dArrow.anchorMax = new Vector2(1, 0.5f);
-                        dArrow.anchoredPosition = new Vector2(-15, 0) * settingScale;
-                        dArrow.sizeDelta = new Vector2(20, 20) * settingScale;
+                        dArrow.anchoredPosition = new Vector2(-15, 0);
+                        dArrow.sizeDelta = new Vector2(20, 20);
 
                         RectTransform dTemplate = new GameObject("Template", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(ScrollRect)).GetComponent<RectTransform>();
                         dTemplate.SetParent(con);
@@ -348,11 +352,15 @@ namespace Editor.MainMenuCreator
                         dTemplate.GetComponent<Image>().sprite = uiSprite;
                         dTemplate.anchorMin = Vector2.zero;
                         dTemplate.anchorMax = new Vector2(1, 0.5f);
-                        dArrow.anchoredPosition = new Vector2(0, 2) * settingScale;
-                        dArrow.sizeDelta = new Vector2(0, 150) * settingScale;
+                        dArrow.anchoredPosition = new Vector2(0, 2);
+                        dArrow.sizeDelta = new Vector2(0, 150);
                         
                         break;
                     case Enums.SettingsControlType.InputField:
+                        con.sizeDelta = Consts.InputFieldSize;
+                        con.localScale = Consts.InputFieldScale;
+                        offset += Consts.InputFieldSize.y * Consts.InputFieldScale.y;
+                        
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Image>();
                         con.gameObject.AddComponent<TMP_InputField>();
@@ -367,6 +375,10 @@ namespace Editor.MainMenuCreator
                         iText.SetParent(iTextArea);
                         break;
                     case Enums.SettingsControlType.Slider:
+                        con.sizeDelta = Consts.SliderSize;
+                        con.localScale = Consts.SliderScale;
+                        offset += Consts.SliderSize.y * Consts.SliderScale.y;
+                        
                         Slider slider = con.gameObject.AddComponent<Slider>();
                         slider.minValue = control.SliderBoundaries.x;
                         slider.maxValue = control.SliderBoundaries.y;
@@ -415,6 +427,10 @@ namespace Editor.MainMenuCreator
                         
                         break;
                     case Enums.SettingsControlType.Toggle:
+                        con.sizeDelta = Consts.ToggleSize;
+                        con.localScale = Consts.ToggleScale;
+                        offset += Consts.ToggleSize.y * Consts.ToggleScale.y;
+                        
                         Toggle t = con.gameObject.AddComponent<Toggle>();
                         t.isOn = ((int)control.PlayerPrefsValue) == 1;
                         con.localPosition = new Vector2(con.localPosition.x - 100f, con.localPosition.y);
@@ -425,6 +441,7 @@ namespace Editor.MainMenuCreator
                         
                         RectTransform tCheckmark = new GameObject("Checkmark", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         tCheckmark.SetParent(tBackground);
+                        tCheckmark.anchoredPosition = Vector2.zero;
                         Image tCheckmarkImage = tCheckmark.GetComponent<Image>();
                         tCheckmarkImage.sprite = checkmark;
                         t.graphic = tCheckmarkImage;
@@ -432,21 +449,21 @@ namespace Editor.MainMenuCreator
                         TMP_Text tLabel = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         tLabel.text = control.DisplayText;
                         tLabel.transform.SetParent(con);
-                        tLabel.rectTransform.localPosition = new Vector2(150f, 0);
+                        tLabel.rectTransform.localPosition = new Vector2(100f, 0);
                         break;
                     default:
                         Debug.LogWarning("Settings type not recognized - Instantiation");
                         break;
                 }
-                offset += buttonSize.y + settingsOptionsSpacing;
+
+                offset += settingsOptionsSpacing;
                 MenuManager.AddSettingsOption(con.gameObject, control.PlayerPrefsKey, control.ControlType, control.PlayerPrefsDataType);
             }
             
             RectTransform button = CreateBackButton();
             button.SetParent(menuCanvas);
-            button.sizeDelta = buttonSize;
             button.anchoredPosition = new Vector2(0, -450f);
-            button.GetComponentInChildren<TMP_Text>().text = "<size=36>Back</size>";
+            button.GetComponentInChildren<TMP_Text>().text = "<size=24>Back</size>";
             
             menuParent.gameObject.SetActive(false);
             

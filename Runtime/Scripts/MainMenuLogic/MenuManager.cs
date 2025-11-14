@@ -26,7 +26,7 @@ namespace MainMenuLogic
                 ControlType = controlType;
             }
         }
-        
+
         private static MenuManager Instance;
 
         public MainMenuScript mainMenu { get; private set; }
