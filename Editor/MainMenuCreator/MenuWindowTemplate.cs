@@ -44,10 +44,13 @@ namespace Editor.MainMenuCreator
             }
         }
 
-        private Material sdf_outlineMat;
+        private static Material sdf_outlineMat;
+        
+        private static Sprite backgroundSprite;
+        private static Sprite uiSprite;
         
         protected float spacing = 15f;
-        protected Sprite uiSprite;
+        
 
         private TextData titleData = new(textColor: Color.white, textOutlineColor: Color.black);
         
@@ -69,10 +72,12 @@ namespace Editor.MainMenuCreator
 
         protected void CreateObjectBase<T>(string menuTag, string titleText) where T : MonoBehaviour
         {
+            if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
+            
+            if (!backgroundSprite) backgroundSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.BackgroundSpritePath);
             if (!uiSprite) uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.UISpriteSpritePath);
             
             if (!FindAnyObjectByType<MenuManager>()) new GameObject("Menu Manager", typeof(MenuManager)).GetComponent<MenuManager>();
-            if (!sdf_outlineMat) sdf_outlineMat = (Material)AssetDatabase.LoadAssetAtPath(Consts.SDFOutlineMatPath, typeof(Material));
             
             GameObject leftoverMenu = FindFirstObjectByType<T>()?.gameObject;
             if(leftoverMenu) DestroyImmediate(leftoverMenu);
@@ -208,11 +213,15 @@ namespace Editor.MainMenuCreator
             return button;
         }
         
-        protected void SetupSlicedSprite(Image image, Sprite sprite)
+        private void SetupSlicedSprite(Image image, Sprite sprite)
         {
             image.sprite = sprite;
             image.type = Image.Type.Sliced;
         }
+
+        protected void SetupUISprite(Image image) => SetupSlicedSprite(image, uiSprite);
+
+        protected void SetupBackgroundSprite(Image image) => SetupSlicedSprite(image, backgroundSprite);
 
         protected void ImportTMPIfMissing()
         {

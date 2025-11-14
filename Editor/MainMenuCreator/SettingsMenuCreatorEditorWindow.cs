@@ -92,8 +92,7 @@ namespace Editor.MainMenuCreator
         
         private float settingsOptionsSpacing = 25;
         private static Vector2 defaultSettingsStartPos = new(0, 350f);
-        
-        private Sprite backgroundSprite;
+
         private Sprite checkmark;
         private Sprite dropdownArrow;
         private Sprite knob;
@@ -192,8 +191,8 @@ namespace Editor.MainMenuCreator
                         {
                             data.SliderBoundaries.x = EditorGUI.IntField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 2, halfWidth, EditorGUIUtility.singleLineHeight), "Lower bound", (int)data.SliderBoundaries.x);
                             data.SliderBoundaries.y = EditorGUI.IntField(new Rect(rect.x, rect.y + EditorGUIUtility.singleLineHeight * 3, halfWidth, EditorGUIUtility.singleLineHeight), "Upper bound", (int)data.SliderBoundaries.y);
-                            if ((int)data.PlayerPrefsValue < data.SliderBoundaries.x) data.PlayerPrefsValue = data.SliderBoundaries.x;
-                            else if ((int)data.PlayerPrefsValue > data.SliderBoundaries.y) data.PlayerPrefsValue = data.SliderBoundaries.y;
+                            if ((int)data.PlayerPrefsValue < data.SliderBoundaries.x) data.PlayerPrefsValue = (int)data.SliderBoundaries.x;
+                            else if ((int)data.PlayerPrefsValue > data.SliderBoundaries.y) data.PlayerPrefsValue = (int)data.SliderBoundaries.y;
                         }
                         else if (data.PlayerPrefsDataType is Enums.PlayerPrefsDataTypes.Float)
                         {
@@ -281,7 +280,6 @@ namespace Editor.MainMenuCreator
 
         private void CreatePrefab()
         {
-            if (!backgroundSprite) backgroundSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.BackgroundSpritePath);
             if (!checkmark) checkmark = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.CheckmarkSpritePath);
             if (!knob) knob = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.KnobSpritePath);
             if (!dropdownArrow) dropdownArrow = AssetDatabase.GetBuiltinExtraResource<Sprite>(Consts.DropdownArrowSpritePath);
@@ -303,14 +301,10 @@ namespace Editor.MainMenuCreator
                 switch (control.ControlType)
                 {
                     case Enums.SettingsControlType.Button:
-                        con.sizeDelta = Consts.ButtonSize;
-                        con.localScale = Consts.ButtonScale;
-                        offset += Consts.ButtonSize.y * Consts.ButtonScale.y;
-                        
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Button>();
                         
-                        SetupSlicedSprite(con.gameObject.AddComponent<Image>(), uiSprite);
+                        SetupUISprite(con.gameObject.AddComponent<Image>());
                         
                         TMP_Text buttonText = Instantiate(title.gameObject, con.transform).GetComponent<TMP_Text>();
                         RectTransform buttonTextRect = buttonText.GetComponent<RectTransform>();
@@ -320,15 +314,16 @@ namespace Editor.MainMenuCreator
                         buttonText.alignment = TextAlignmentOptions.Center;
                         buttonText.text = $"<size=24>{control.DisplayText}</size>";
                         buttonText.color = Color.black;
+                        
+                        con.sizeDelta = Consts.ButtonSize;
+                        con.localScale = Consts.ButtonScale;
+                        offset += Consts.ButtonSize.y * Consts.ButtonScale.y;
+                        
                         break;
                     case Enums.SettingsControlType.Dropdown:
-                        con.sizeDelta = Consts.DropdownSize;
-                        con.localScale = Consts.DropdownScale;
-                        offset += Consts.DropdownSize.y * Consts.DropdownScale.y;
-                        
                         con.gameObject.AddComponent<CanvasRenderer>();
                         
-                        SetupSlicedSprite(con.gameObject.AddComponent<Image>(), uiSprite);
+                        SetupUISprite(con.gameObject.AddComponent<Image>());
                         
                         TMP_Dropdown dDropdown = con.gameObject.AddComponent<TMP_Dropdown>();
 
@@ -352,19 +347,19 @@ namespace Editor.MainMenuCreator
                         dTemplate.SetParent(con);
                         dTemplate.gameObject.SetActive(false);
                         
-                        SetupSlicedSprite(dTemplate.GetComponent<Image>(), uiSprite);
+                        SetupUISprite(dTemplate.GetComponent<Image>());
                         
                         dTemplate.anchorMin = Vector2.zero;
                         dTemplate.anchorMax = Consts.Anchor_MaxHalf;
                         dArrow.anchoredPosition = new Vector2(0, 2);
                         dArrow.sizeDelta = new Vector2(0, 150);
                         
+                        con.sizeDelta = Consts.DropdownSize;
+                        con.localScale = Consts.DropdownScale;
+                        offset += Consts.DropdownSize.y * Consts.DropdownScale.y;
+                        
                         break;
                     case Enums.SettingsControlType.InputField:
-                        con.sizeDelta = Consts.InputFieldSize;
-                        con.localScale = Consts.InputFieldScale;
-                        offset += Consts.InputFieldSize.y * Consts.InputFieldScale.y;
-                        
                         con.gameObject.AddComponent<CanvasRenderer>();
                         con.gameObject.AddComponent<Image>();
                         con.gameObject.AddComponent<TMP_InputField>();
@@ -377,25 +372,18 @@ namespace Editor.MainMenuCreator
 
                         RectTransform iText = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI)).GetComponent<RectTransform>();
                         iText.SetParent(iTextArea);
+                        
+                        con.sizeDelta = Consts.InputFieldSize;
+                        con.localScale = Consts.InputFieldScale;
+                        offset += Consts.InputFieldSize.y * Consts.InputFieldScale.y;
+                        
                         break;
                     case Enums.SettingsControlType.Slider:
-                        con.sizeDelta = Consts.SliderSize;
-                        con.localScale = Consts.SliderScale;
-                        offset += Consts.SliderSize.y * Consts.SliderScale.y;
-                        
                         Slider slider = con.gameObject.AddComponent<Slider>();
-                        slider.minValue = control.SliderBoundaries.x;
-                        slider.maxValue = control.SliderBoundaries.y;
-                        if (control.PlayerPrefsDataType == Enums.PlayerPrefsDataTypes.Int)
-                        {
-                            slider.wholeNumbers = true;
-                            slider.value = (int)control.PlayerPrefsValue;
-                        }
-                        else slider.value = (float)control.PlayerPrefsValue;
                         
                         RectTransform sBackground = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sBackground.SetParent(con);
-                        sBackground.GetComponent<Image>().sprite = backgroundSprite;
+                        SetupBackgroundSprite(sBackground.GetComponent<Image>());
                         sBackground.anchorMin = Consts.Anchor_ZeroQuarter;
                         sBackground.anchorMax = Consts.Anchor_MaxThreeQuarters;
                         sBackground.anchoredPosition = Vector2.zero;
@@ -405,37 +393,48 @@ namespace Editor.MainMenuCreator
                         sFillArea.SetParent(con);
                         sFillArea.anchorMin = Consts.Anchor_ZeroQuarter;
                         sFillArea.anchorMax = Consts.Anchor_MaxThreeQuarters;
-                        sFillArea.anchoredPosition = Vector2.zero;
+                        sFillArea.offsetMin = new Vector2(5, 0);
+                        sFillArea.offsetMax = new Vector2(15, 0);
                         
                         RectTransform sFill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
                         sFill.SetParent(sFillArea);
-                        slider.fillRect = sFill;
+                        SetupUISprite(sFill.GetComponent<Image>());
                         sFill.anchorMin = Vector2.zero;
                         sFill.anchorMax = Vector2.up;
-                        sFill.anchoredPosition = Vector2.zero;
-                        
-                        SetupSlicedSprite(sFill.GetComponent<Image>(), uiSprite);
+                        sFill.offsetMin = Vector2.zero;
+                        sFill.offsetMax = new Vector2(10, 0);
                         
                         RectTransform sHandleSlideArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
                         sHandleSlideArea.SetParent(con);
                         sHandleSlideArea.anchorMin = Vector2.zero;
                         sHandleSlideArea.anchorMax = Consts.Anchor_MaxMax;
-                        sHandleSlideArea.anchoredPosition = Vector2.zero;
+                        sHandleSlideArea.offsetMin = new Vector2(10, 0);
+                        sHandleSlideArea.offsetMax = new Vector2(10, 0);
                         
                         RectTransform sHandle = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<RectTransform>();
-                        Image sHandleImage = sHandle.GetComponent<Image>();
                         sHandle.SetParent(sHandleSlideArea);
+                        sHandle.GetComponent<Image>().sprite = knob;
+                        sHandle.offsetMin = Vector2.zero;
+                        sHandle.offsetMax = new Vector2(20, 0);
+                        
+                        slider.fillRect = sFill;
                         slider.handleRect = sHandle;
-                        slider.targetGraphic = sHandleImage;
-                        sHandleImage.sprite = knob;
-                        sHandle.anchoredPosition = Vector2.zero;
+                        slider.targetGraphic = sHandle.GetComponent<Image>();
+                        slider.minValue = control.SliderBoundaries.x;
+                        slider.maxValue = control.SliderBoundaries.y;
+                        if (control.PlayerPrefsDataType == Enums.PlayerPrefsDataTypes.Int)
+                        {
+                            slider.wholeNumbers = true;
+                            slider.value = (int)control.PlayerPrefsValue;
+                        }
+                        else slider.value = (float)control.PlayerPrefsValue;
+                        
+                        con.sizeDelta = Consts.SliderSize;
+                        con.localScale = Consts.SliderScale;
+                        offset += Consts.SliderSize.y * Consts.SliderScale.y;
                         
                         break;
                     case Enums.SettingsControlType.Toggle:
-                        con.sizeDelta = Consts.ToggleSize;
-                        con.localScale = Consts.ToggleScale;
-                        offset += Consts.ToggleSize.y * Consts.ToggleScale.y;
-                        
                         Toggle t = con.gameObject.AddComponent<Toggle>();
                         t.isOn = ((int)control.PlayerPrefsValue) == 1;
                         con.localPosition = new Vector2(con.localPosition.x - 100f, con.localPosition.y);
@@ -455,6 +454,11 @@ namespace Editor.MainMenuCreator
                         tLabel.text = control.DisplayText;
                         tLabel.transform.SetParent(con);
                         tLabel.rectTransform.localPosition = new Vector2(100f, 0);
+                        
+                        con.sizeDelta = Consts.ToggleSize;
+                        con.localScale = Consts.ToggleScale;
+                        offset += Consts.ToggleSize.y * Consts.ToggleScale.y;
+                        
                         break;
                     case Enums.SettingsControlType.None:
                     default:
