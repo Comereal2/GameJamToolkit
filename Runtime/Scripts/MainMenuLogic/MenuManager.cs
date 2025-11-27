@@ -16,14 +16,21 @@ namespace MainMenuLogic
         private struct SettingsOption
         {
             public GameObject Obj;
-            public string Key;
             public Enums.SettingsControlType ControlType;
+            public Structs.PlayerPrefData PlayerPref;
 
-            public SettingsOption(GameObject obj, string key, Enums.SettingsControlType controlType)
+            public SettingsOption(GameObject obj, Enums.SettingsControlType controlType, Structs.PlayerPrefData playerPref)
             {
                 Obj = obj;
-                Key = key;
                 ControlType = controlType;
+                PlayerPref = playerPref;
+            }
+
+            public SettingsOption(GameObject obj, Enums.SettingsControlType controlType, Enums.PlayerPrefsDataTypes dataType, string key, object value)
+            {
+                Obj = obj;
+                ControlType = controlType;
+                PlayerPref = new Structs.PlayerPrefData(dataType, key, value);
             }
         }
 
@@ -67,9 +74,9 @@ namespace MainMenuLogic
         /// </summary>
         public List<(string, Type)> GetAllKeys()
         {
-            var list = floatPlayerPrefs.Select(pref => new ValueTuple<string, Type>(pref.Key, typeof(float))).ToList();
-            list.AddRange(intPlayerPrefs.Select(pref => new ValueTuple<string, Type>(pref.Key, typeof(int))));
-            list.AddRange(stringPlayerPrefs.Select(pref => new ValueTuple<string, Type>(pref.Key, typeof(string))));
+            var list = floatPlayerPrefs.Select(pref => new ValueTuple<string, Type>(pref.PlayerPref.Key, typeof(float))).ToList();
+            list.AddRange(intPlayerPrefs.Select(pref => new ValueTuple<string, Type>(pref.PlayerPref.Key, typeof(int))));
+            list.AddRange(stringPlayerPrefs.Select(pref => new ValueTuple<string, Type>(pref.PlayerPref.Key, typeof(string))));
 
             return list;
         }
@@ -156,18 +163,21 @@ namespace MainMenuLogic
 
         #region SettingsMenuFunctions
 
-        public static void AddSettingsOption(GameObject optionObject, string key, Enums.SettingsControlType controlType, Enums.PlayerPrefsDataTypes dataType)
+        public static void AddSettingsOption(GameObject optionObject, Enums.SettingsControlType controlType, Structs.PlayerPrefData playerPref)
         {
-            switch (dataType)
+            switch (playerPref.DataType)
             {
                 case Enums.PlayerPrefsDataTypes.Int:
-                    Instance.intPlayerPrefs.Add(new(optionObject, key, controlType));
+                    Instance.intPlayerPrefs.Add(new(optionObject, controlType, playerPref));
+                    PlayerPrefs.SetInt(playerPref.Key, (int)playerPref.Value);
                     break;
                 case Enums.PlayerPrefsDataTypes.Float:
-                    Instance.floatPlayerPrefs.Add(new (optionObject, key, controlType));
+                    Instance.floatPlayerPrefs.Add(new (optionObject, controlType, playerPref));
+                    PlayerPrefs.SetFloat(playerPref.Key, (float)playerPref.Value);
                     break;
                 case Enums.PlayerPrefsDataTypes.String:
-                    Instance.stringPlayerPrefs.Add(new(optionObject, key, controlType));
+                    Instance.stringPlayerPrefs.Add(new(optionObject, controlType, playerPref));
+                    PlayerPrefs.SetString(playerPref.Key, (string)playerPref.Value);
                     break;
             }
         }
@@ -177,17 +187,17 @@ namespace MainMenuLogic
             ClearPlayerPrefs();
             foreach (var playerPref in Instance.floatPlayerPrefs)
             {
-                PlayerPrefs.SetFloat(playerPref.Key, (float)GetValueFromObject(playerPref.Obj, playerPref.ControlType));
+                PlayerPrefs.SetFloat(playerPref.PlayerPref.Key, (float)GetValueFromObject(playerPref.Obj, playerPref.ControlType));
             }
             
             foreach (var playerPref in Instance.intPlayerPrefs)
             {
-                PlayerPrefs.SetInt(playerPref.Key, (int)GetValueFromObject(playerPref.Obj, playerPref.ControlType));
+                PlayerPrefs.SetInt(playerPref.PlayerPref.Key, (int)GetValueFromObject(playerPref.Obj, playerPref.ControlType));
             }
             
             foreach (var playerPref in Instance.stringPlayerPrefs)
             {
-                PlayerPrefs.SetString(playerPref.Key, (string)GetValueFromObject(playerPref.Obj, playerPref.ControlType));
+                PlayerPrefs.SetString(playerPref.PlayerPref.Key, (string)GetValueFromObject(playerPref.Obj, playerPref.ControlType));
             }
             PlayerPrefs.Save();
         }
@@ -197,10 +207,10 @@ namespace MainMenuLogic
             switch (option.ControlType)
             {
                 case Enums.SettingsControlType.InputField:
-                    option.Obj.GetComponent<InputField>().text = PlayerPrefs.GetFloat(option.Key).ToString();
+                    option.Obj.GetComponent<InputField>().text = PlayerPrefs.GetFloat(option.PlayerPref.Key, (float)option.PlayerPref.Value).ToString();
                     break;
                 case Enums.SettingsControlType.Slider:
-                    option.Obj.GetComponent<Slider>().value = PlayerPrefs.GetFloat(option.Key);
+                    option.Obj.GetComponent<Slider>().value = PlayerPrefs.GetFloat(option.PlayerPref.Key, (float)option.PlayerPref.Value);
                     break;
             }
         }
@@ -210,23 +220,23 @@ namespace MainMenuLogic
             switch (option.ControlType)
             {
                 case Enums.SettingsControlType.Dropdown:
-                    option.Obj.GetComponent<Dropdown>().value = PlayerPrefs.GetInt(option.Key);
+                    option.Obj.GetComponent<Dropdown>().value = PlayerPrefs.GetInt(option.PlayerPref.Key, (int)option.PlayerPref.Value);
                     break;
                 case Enums.SettingsControlType.InputField:
-                    option.Obj.GetComponent<InputField>().text = PlayerPrefs.GetInt(option.Key).ToString();
+                    option.Obj.GetComponent<InputField>().text = PlayerPrefs.GetInt(option.PlayerPref.Key, (int)option.PlayerPref.Value).ToString();
                     break;
                 case Enums.SettingsControlType.Slider:
-                    option.Obj.GetComponent<Slider>().value = PlayerPrefs.GetInt(option.Key);
+                    option.Obj.GetComponent<Slider>().value = PlayerPrefs.GetInt(option.PlayerPref.Key, (int)option.PlayerPref.Value);
                     break;
                 case Enums.SettingsControlType.Toggle:
-                    option.Obj.GetComponent<Toggle>().isOn = PlayerPrefs.GetInt(option.Key) == 1;
+                    option.Obj.GetComponent<Toggle>().isOn = PlayerPrefs.GetInt(option.PlayerPref.Key, (int)option.PlayerPref.Value) == 1;
                     break;
             }
         }
 
         private static void SetStringOptionValue(SettingsOption option)
         {
-            if (option.ControlType == Enums.SettingsControlType.InputField) option.Obj.GetComponent<InputField>().text = PlayerPrefs.GetString(option.Key);
+            if (option.ControlType == Enums.SettingsControlType.InputField) option.Obj.GetComponent<InputField>().text = PlayerPrefs.GetString(option.PlayerPref.Key, (string)option.PlayerPref.Value);
         }
         
         private static object GetValueFromObject(GameObject obj, Enums.SettingsControlType type)
