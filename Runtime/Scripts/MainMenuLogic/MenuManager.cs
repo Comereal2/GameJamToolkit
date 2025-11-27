@@ -41,9 +41,9 @@ namespace MainMenuLogic
         public SettingsMenuScript settingsMenu { get; private set; }
         public LoadGameMenuScript loadGameMenu { get; private set; }
         
-        [SerializeField] private List<SettingsOption> floatPlayerPrefs;
-        [SerializeField] private List<SettingsOption> intPlayerPrefs;
-        [SerializeField] private List<SettingsOption> stringPlayerPrefs;
+        [SerializeField] private List<SettingsOption> floatPlayerPrefs = new();
+        [SerializeField] private List<SettingsOption> intPlayerPrefs = new();
+        [SerializeField] private List<SettingsOption> stringPlayerPrefs = new();
         
         private void Awake()
         {
