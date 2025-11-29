@@ -86,5 +86,15 @@ namespace Types
         #endregion
 
         #endregion
+
+        #region UnityMenuNames
+
+        public const string PackageComponentCategory = "ComerealToolkitComponents/";
+
+        public const string SimpleSubCategory = "Simple/";
+        
+        public const string SingletonSubCategory = "Singletons/";
+
+        #endregion
     }
 }

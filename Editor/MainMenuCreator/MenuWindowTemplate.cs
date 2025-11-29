@@ -23,7 +23,7 @@ namespace Editor.MainMenuCreator
             public float TextOutlineThickness;
             public int TextFontSize;
 
-            public TextData(bool expandSettings = false, Color textColor = default, bool textHasOutline = true, Color textOutlineColor = default, float textOutlineThickness = 0.1f, int textFontSize = 120)
+            public TextData(bool expandSettings = false, Color textColor = default, bool textHasOutline = false, Color textOutlineColor = default, float textOutlineThickness = 0.1f, int textFontSize = 120)
             {
                 ExpandSettings = expandSettings;
                 TextColor = textColor;

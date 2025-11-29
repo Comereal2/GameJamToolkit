@@ -10,7 +10,8 @@
             Credits,
             Quit,
             NewGame,
-            LoadGame
+            LoadGame,
+            Custom
         }
         
         public enum SettingsControlType

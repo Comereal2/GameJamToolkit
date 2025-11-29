@@ -31,15 +31,15 @@ namespace Editor.CustomInspectors
                 {
                     case Enums.PlayerPrefsDataTypes.Float:
                         var fProp = property.FindPropertyRelative(Structs.PlayerPrefData.FloatValueSubfieldName);
-                        fProp.floatValue = EditorGUI.FloatField(rect, "Value", fProp.floatValue);
+                        fProp.floatValue = EditorGUI.FloatField(rect, "Default Value", fProp.floatValue);
                         break;
                     case Enums.PlayerPrefsDataTypes.Int:
                         var iProp = property.FindPropertyRelative(Structs.PlayerPrefData.IntValueSubfieldName);
-                        iProp.intValue = EditorGUI.IntField(rect, "Value", iProp.intValue);
+                        iProp.intValue = EditorGUI.IntField(rect, "Default Value", iProp.intValue);
                         break;
                     case Enums.PlayerPrefsDataTypes.String:
                         var sProp = property.FindPropertyRelative(Structs.PlayerPrefData.StringValueSubfieldName);
-                        sProp.stringValue = EditorGUI.TextField(rect, "Value", sProp.stringValue);
+                        sProp.stringValue = EditorGUI.TextField(rect, "Default Value", sProp.stringValue);
                         break;
                 }
 

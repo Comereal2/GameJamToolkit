@@ -52,15 +52,16 @@ namespace Editor.MainMenuCreator
         private ReorderableList buttonList;
         
         private bool expandButtonSettings = false;
-        private ButtonProperties combinedButtonProperties = new ButtonProperties(true, null, Color.white, Color.white, true, Color.black, 0.1f);
-        private float propertiesHeight = 120f;
+        private ButtonProperties combinedButtonProperties = new ButtonProperties(true, null, Color.white, Color.white, false, Color.black, 0.1f);
         private bool separateButtonSettings = false;
         
         private List<Enums.MainMenuButtonTypes> buttons = new();
         private List<ButtonProperties> buttonProperties = new()
         {
-            new ButtonProperties(true, null, Color.white, Color.white, true, Color.black, 0.1f)
+            new ButtonProperties(true, null, Color.white, Color.white, false, Color.black, 0.1f)
         };
+
+        private List<string> customButtonNames = new();
 
         private bool requireLoadMenu = false;
         private bool requireSettingsMenu = false;
@@ -71,9 +72,13 @@ namespace Editor.MainMenuCreator
             if (buttons.Count == 0)
             {
                 buttons.Add(Enums.MainMenuButtonTypes.Play);
+                customButtonNames.Add(string.Empty);
                 buttons.Add(Enums.MainMenuButtonTypes.Settings);
+                customButtonNames.Add(string.Empty);
                 buttons.Add(Enums.MainMenuButtonTypes.Credits);
+                customButtonNames.Add(string.Empty);
                 buttons.Add(Enums.MainMenuButtonTypes.Quit);
+                customButtonNames.Add(string.Empty);
             }
             
             buttonList = new ReorderableList(buttons, typeof(Enums.MainMenuButtonTypes), true, true, true, true);
@@ -81,39 +86,22 @@ namespace Editor.MainMenuCreator
             buttonList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
                 var button = buttons[index];
-
-                if (!separateButtonSettings)
-                {
-                    buttonList.elementHeight = EditorGUIUtility.singleLineHeight;
-                    if (button != Enums.MainMenuButtonTypes.Play && button != Enums.MainMenuButtonTypes.NewGame)
-                    {
-                        buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
-                            new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), button);
-                    }
-                    else
-                    {
-                        float halfWidth = rect.width / 2;
-                        buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), button);
-                        playScene = (SceneAsset)EditorGUI.ObjectField(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), playScene, typeof(SceneAsset), true);
-                    }
-
-                    return;
-                }
-
-                buttonList.elementHeight = propertiesHeight + EditorGUIUtility.singleLineHeight;
+                float halfWidth = rect.width / 2;
                 
                 if (button != Enums.MainMenuButtonTypes.Play && button != Enums.MainMenuButtonTypes.NewGame)
                 {
-                    buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
-                        new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), button);
+                    buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), button);
+                    customButtonNames[index] = EditorGUI.TextField(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), customButtonNames[index]);
                 }
                 else
                 {
-                    float halfWidth = rect.width / 2;
-                    buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(
-                        new Rect(rect.x, rect.y + index * propertiesHeight, halfWidth, EditorGUIUtility.singleLineHeight), button);
-                    playScene = (SceneAsset)EditorGUI.ObjectField(new Rect(rect.x + halfWidth, rect.y, halfWidth, EditorGUIUtility.singleLineHeight), playScene, typeof(SceneAsset), true);
+                    float thirdWidth = rect.width / 3;
+                    buttons[index] = (Enums.MainMenuButtonTypes)EditorGUI.EnumPopup(new Rect(rect.x, rect.y, thirdWidth, EditorGUIUtility.singleLineHeight), button);
+                    customButtonNames[index] = EditorGUI.TextField(new Rect(rect.x + thirdWidth, rect.y, thirdWidth, EditorGUIUtility.singleLineHeight), customButtonNames[index]);
+                    playScene = (SceneAsset)EditorGUI.ObjectField(new Rect(rect.x + thirdWidth * 2, rect.y, thirdWidth, EditorGUIUtility.singleLineHeight), playScene, typeof(SceneAsset), true);
                 }
+
+                if (!separateButtonSettings) return;
                 
                 float yOffset = rect.y + EditorGUIUtility.singleLineHeight + 2;
 
@@ -184,9 +172,24 @@ namespace Editor.MainMenuCreator
 
             buttonList.drawHeaderCallback = (Rect rect) => EditorGUI.LabelField(rect, "Main Menu Buttons");
 
-            buttonList.onAddCallback = (ReorderableList list) => buttons.Add(Enums.MainMenuButtonTypes.None);
+            buttonList.onAddCallback = (ReorderableList list) =>
+            {
+                buttons.Add(Enums.MainMenuButtonTypes.None);
+                customButtonNames.Add(string.Empty);
+            };
 
-            buttonList.onRemoveCallback = (ReorderableList list) => buttons.RemoveAt(list.index);
+            buttonList.onRemoveCallback = (ReorderableList list) =>
+            {
+                buttons.RemoveAt(list.index);
+                customButtonNames.RemoveAt(list.index);
+            };
+
+            buttonList.elementHeightCallback = index =>
+            {
+                if (!separateButtonSettings) return EditorGUIUtility.singleLineHeight;
+
+                return buttonProperties[index].textHasOutline ? 140f : 100f;
+            };
         }
 
         private void OnGUI()
@@ -324,7 +327,7 @@ namespace Editor.MainMenuCreator
                         {
                             UnityEditor.Events.UnityEventTools.AddIntPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Play, playSceneBuildIndex);
                         }
-                        buttonText.text += "Play</size>";
+                        buttonText.text += customButtonNames[i] == string.Empty ? "Play</size>" : $"{customButtonNames[i]}</size>";
                         break;
                     case Enums.MainMenuButtonTypes.NewGame:
                         if (playSceneBuildIndex == -1)
@@ -335,26 +338,29 @@ namespace Editor.MainMenuCreator
                         {
                             UnityEditor.Events.UnityEventTools.AddIntPersistentListener(button.GetComponent<Button>().onClick, MenuManager.Play, playSceneBuildIndex);
                         }
-                        buttonText.text += "New Game</size>";
+                        buttonText.text += customButtonNames[i] == string.Empty ? "New Game</size>" : $"{customButtonNames[i]}</size>";
                         break;
                     case Enums.MainMenuButtonTypes.LoadGame:
                         UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.OpenLoadMenu);
-                        buttonText.text += "Load Save</size>";
+                        buttonText.text += customButtonNames[i] == string.Empty ? "Load Save</size>" : $"{customButtonNames[i]}</size>";
                         requireLoadMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Settings:
                         UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.OpenSettings);
-                        buttonText.text += "Settings</size>";
+                        buttonText.text += customButtonNames[i] == string.Empty ? "Settings</size>" : $"{customButtonNames[i]}</size>";
                         requireSettingsMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Credits:
                         UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.OpenCredits);
-                        buttonText.text += "Credits</size>";
+                        buttonText.text += customButtonNames[i] == string.Empty ? "Credits</size>" : $"{customButtonNames[i]}</size>";
                         requireCreditsMenu = true;
                         break;
                     case Enums.MainMenuButtonTypes.Quit:
                         UnityEditor.Events.UnityEventTools.AddPersistentListener(button.GetComponent<Button>().onClick, MenuManager.QuitGame);
-                        buttonText.text += "Quit</size>";
+                        buttonText.text += customButtonNames[i] == string.Empty ? "Quit</size>" : $"{customButtonNames[i]}</size>";
+                        break;
+                    case Enums.MainMenuButtonTypes.Custom:
+                        buttonText.text += customButtonNames[i] == string.Empty ? "Custom</size>" : $"{customButtonNames[i]}</size>";
                         break;
                     default:
                         buttonText.text += "UNIMPLEMENTED</size>";
