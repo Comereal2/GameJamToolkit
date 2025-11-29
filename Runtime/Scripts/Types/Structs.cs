@@ -65,5 +65,20 @@ namespace Types
                 Value = value;
             }
         }
+        
+        [Serializable]
+        public struct KeyToAudioClip
+        {
+            [field:SerializeField] public string Key { get; private set; }
+            [field: SerializeField] public AudioClip Clip { get; private set; }
+
+            public void ReplaceKey(string key) => Key = key;
+
+            public KeyToAudioClip(string key, AudioClip clip)
+            {
+                Key = key;
+                Clip = clip;
+            }
+        }
     }
 }
