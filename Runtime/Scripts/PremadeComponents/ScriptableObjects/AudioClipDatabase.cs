@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace PremadeComponents.ScriptableObjects
 {
+    [CreateAssetMenu(fileName = "Audio Clip Database", menuName = Consts.PackageCreateAssetMenuCategory + "AudioClipDatabase")]
     public class AudioClipDatabase : ScriptableObject
     {
         [SerializeField] private List<Structs.KeyToAudioClip> _audioClips = new();
@@ -57,11 +58,11 @@ namespace PremadeComponents.ScriptableObjects
 
         private void OnValidate()
         {
-            RefreshAudioClips();
-            foreach (var clip in _audioClips.Where(clip => clip.Key == string.Empty))
+            foreach (var clip in _audioClips.Where(clip => clip.Key == string.Empty && clip.Clip))
             {
                 clip.ReplaceKey(clip.Clip.name);
             }
+            RefreshAudioClips();
         }
     }
 }

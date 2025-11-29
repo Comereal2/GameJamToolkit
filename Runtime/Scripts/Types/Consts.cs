@@ -95,6 +95,8 @@ namespace Types
         
         public const string SingletonSubCategory = "Singletons/";
 
+        public const string PackageCreateAssetMenuCategory = "ComerealToolkitAssets/";
+
         #endregion
     }
 }
