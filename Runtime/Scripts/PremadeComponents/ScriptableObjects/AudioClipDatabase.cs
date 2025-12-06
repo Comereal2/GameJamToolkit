@@ -19,10 +19,9 @@ namespace PremadeComponents.ScriptableObjects
         public void RefreshAudioClips()
         {
             audioClips.Clear();
-            foreach (var clip in _audioClips.Where(clip => !audioClips.TryAdd(clip.Key, clip.Clip)))
+            foreach (var clip in _audioClips.Where(clip => clip.Clip).Where(clip => !audioClips.TryAdd(clip.Key, clip.Clip)))
             {
-                Debug.LogWarning("Duplicate clip key found in Audio Clip List. Removing");
-                _audioClips.Remove(clip);
+                Debug.LogWarning($"Duplicate clip key {clip.Key} found in Audio Clip List.");
             }
         }
         

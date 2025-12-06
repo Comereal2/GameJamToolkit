@@ -46,6 +46,8 @@ namespace Editor.CustomInspectors
                 AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(relativePath);
                 ((AudioClipDatabase)target).Editor_Add(clip);
             }
+            
+            EditorUtility.SetDirty(target);
         }
     }
 }
